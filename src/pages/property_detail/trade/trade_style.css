@@ -1,0 +1,32 @@
+:root {
+  --purple: #8e44ad;
+  --light-purple: #9b59b6;
+}
+
+.bg-purple {
+  background-color: var(--purple) !important;
+}
+
+.text-purple {
+  color: var(--purple) !important;
+}
+
+.btn-purple {
+  background-color: var(--purple) !important;
+  border-color: var(--purple) !important;
+  color: white !important;
+}
+
+.btn-purple:hover {
+  background-color: var(--light-purple) !important;
+  border-color: var(--light-purple) !important;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--purple) !important;
+  border-color: var(--purple) !important;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: var(--light-purple) !important;
+}
