@@ -1,15 +1,7 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 
-export default function TradeOptionsBox({ type }) {
-  const trades = [
-    { price: '53,500', quantity: 100, total: '5,350,000' },
-    { price: '53,000', quantity: 150, total: '7,950,000' },
-    { price: '52,500', quantity: 200, total: '10,500,000' },
-    { price: '52,000', quantity: 250, total: '13,000,000' },
-    { price: '51,500', quantity: 300, total: '15,450,000' },
-  ];
-
+export default function TradeOptionsBox({ type, trades }) {
   return (
     <div className="mb-3">
       <Table striped bordered hover size="sm">
@@ -21,16 +13,24 @@ export default function TradeOptionsBox({ type }) {
           </tr>
         </thead>
         <tbody>
-          {trades.map((trade, index) => (
-            <tr
-              key={index}
-              className={type === 'buy' ? 'text-danger' : 'text-primary'}
-            >
-              <td>{trade.price}</td>
-              <td>{trade.quantity}</td>
-              <td>{trade.total}</td>
+          {trades && trades.length > 0 ? (
+            trades.map((trade, index) => (
+              <tr
+                key={index}
+                className={type === 'buy' ? 'text-danger' : 'text-primary'}
+              >
+                <td>{trade.price}</td>
+                <td>{trade.quantity}</td>
+                <td>{(trade.price * trade.quantity).toLocaleString()}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3" className="text-center">
+                데이터가 없습니다.
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </Table>
     </div>
