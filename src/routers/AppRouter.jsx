@@ -18,7 +18,7 @@ const AppRouter = createBrowserRouter([
     element: <MainPage />,
   },
   {
-    path: '/property/trade',
+    path: '/property/:id/trade',
     element: <TradeMain />,
   },
 ]);
