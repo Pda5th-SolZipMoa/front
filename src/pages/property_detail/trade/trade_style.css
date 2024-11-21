@@ -30,3 +30,30 @@
 .nav-tabs .nav-link:hover {
   border-color: var(--light-purple) !important;
 }
+
+/* 호가창 표 스타일 */
+.custom-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-table thead th {
+  background-color: #c695ee;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.custom-table tbody tr {
+  background-color: white;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #f3e5f5;
+}
+
+.custom-table td,
+.custom-table th {
+  border-color: #c695ee;
+}
+/* 호가창 표 스타일 */
