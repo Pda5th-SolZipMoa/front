@@ -19,7 +19,7 @@ const AppRouter = createBrowserRouter([
     element: <MainPage />,
   },
   {
-    path: '/property_detail',
+    path: '/property_detail/info/:id',
     element: <DetailIndex/>,
   }
 ]);
