@@ -62,7 +62,7 @@ const PropertyList = () => {
                 'linear-gradient(180deg, #A8B3F2 0%, #B690EE 21%, #F68EA3 57.5%, #FBAD7A 99.5%)',
               borderImageSlice: 1,
               WebkitMaskImage:
-                'linear-gradient(180deg, #A8B3F2 0%, #B690EE 21%, #F68EA3 57.5%, #FBAD7A 99.5%)', 
+                'linear-gradient(180deg, #A8B3F2 0%, #B690EE 21%, #F68EA3 57.5%, #FBAD7A 99.5%)',
             }}
           >
             <option>수익률순</option>
@@ -72,7 +72,7 @@ const PropertyList = () => {
         </div>
         <div style={listStyles.cardList} className="custom-scrollbar">
           <PropertyCard
-            name="서울 강남구 A빌딩"
+            name="아크로 서울포레스트"
             image="/building_photo.jpg"
             price="5,000,000"
             tokenPrice="50,000"
@@ -80,7 +80,15 @@ const PropertyList = () => {
             percentage="12.5"
           />
           <PropertyCard
-            name="서울 성북구 B빌딩"
+            name="금호 삼성 래미안"
+            image="/building_photo.jpg"
+            price="5,000,000"
+            tokenPrice="50,000"
+            availableTokens="100"
+            percentage="11.5"
+          />
+          <PropertyCard
+            name="신동아"
             image="/building_photo.jpg"
             price="5,000,000"
             tokenPrice="50,000"
