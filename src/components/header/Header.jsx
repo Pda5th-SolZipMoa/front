@@ -1,9 +1,29 @@
-import React from 'react';
-import { Container, Navbar, Button, Form } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Container, Navbar, Form, Dropdown, Button } from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
 import custom_header from './header.module.css';
 
-export default function Header() {
+const Header = ({
+  searchQuery,
+  setSearchQuery,
+  searchResults,
+  onSelectLocation,
+}) => {
+  const [placeholder, setPlaceholder] = useState('검색어 입력'); // Placeholder 상태 추가
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value); // 검색어 업데이트
+  };
+
+  const handleResultClick = (result) => {
+    onSelectLocation({
+      latitude: result.latitude,
+      longitude: result.longitude,
+    }); // 선택된 위치 전달
+    setSearchQuery(''); // 드롭다운 닫기
+    setPlaceholder(result.name); // Placeholder 업데이트
+  };
+
   return (
     <Navbar bg="white" expand="lg" className="border-bottom">
       <Container className={`d-flex flex-wrap ${custom_header.container}`}>
@@ -35,25 +55,30 @@ export default function Header() {
         >
           <div className="position-relative w-100">
             <Search
-              className={`position-absolute ${custom_header.searchIcon}`}
-              style={{
-                top: '50%',
-                left: '5px',
-                transform: 'translateY(-50%)',
-                color: '#6c757d',
-                fontSize: '1.2rem',
-                zIndex: 0,
-              }}
+              style={{ position: 'absolute', top: '10px', left: '10px' }}
             />
             <Form.Control
-              type="search"
-              placeholder="찾고 싶은 물건을 검색해보세요..."
-              aria-label="검색"
-              className={`ps-4 ${custom_header.search}`}
-              style={{
-                paddingLeft: '30px',
-              }}
+              type="text"
+              placeholder={placeholder} // Placeholder 동적으로 설정
+              value={searchQuery}
+              onChange={handleSearchChange}
+              style={{ paddingLeft: '30px' }}
             />
+            {searchQuery && searchResults.length > 0 && (
+              <Dropdown.Menu
+                show
+                style={{ width: '100%', position: 'absolute', top: '40px' }}
+              >
+                {searchResults.map((result, index) => (
+                  <Dropdown.Item
+                    key={index}
+                    onClick={() => handleResultClick(result)} // 클릭 시 Placeholder 변경
+                  >
+                    {result.name} - {result.address}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            )}
           </div>
         </Form>
         <div className="d-flex align-items-center justify-content-end flex-grow-1">
@@ -96,4 +121,6 @@ export default function Header() {
       </Container>
     </Navbar>
   );
-}
+};
+
+export default Header;
