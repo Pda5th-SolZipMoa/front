@@ -76,7 +76,9 @@ const PropertyList = ({ moveToLocation, data }) => {
             tokenPrice={property.token_supply}
             availableTokens={property.availableTokens}
             percentage={property.percentage}
-            moveToLocation={moveToLocation} 
+            lat={property.lat}
+            lng={property.lng}
+            moveToLocation={moveToLocation}
           />
         ))}
       </div>

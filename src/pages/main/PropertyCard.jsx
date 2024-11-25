@@ -9,9 +9,9 @@ const cardStyles = {
     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
     backgroundColor: '#ffffff',
     padding: '10px',
-    minHeight: '350px', 
-    maxHeight: '500px', 
-    overflowY: 'auto', 
+    minHeight: '350px',
+    maxHeight: '500px',
+    overflowY: 'auto',
   },
   img: {
     height: '200px',
@@ -26,11 +26,17 @@ const PropertyCard = ({
   tokenPrice,
   availableTokens,
   percentage,
+  moveToLocation,
+  lat,
+  lng,
 }) => {
   const percentageColor = percentage > 0 ? 'text-success' : 'text-danger';
 
   return (
     <Card
+      onClick={() => {
+        moveToLocation(lat, lng);
+      }}
       className="mb-3"
       style={cardStyles.container}
       onMouseEnter={(e) => {

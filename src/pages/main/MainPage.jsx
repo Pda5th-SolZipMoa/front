@@ -25,6 +25,10 @@ export const Main = () => {
     fetchBuildingLists();
   }, []);
 
+  const moveToLocation = (latitude, longitude) => {
+    setSelectedLocation({ latitude, longitude });
+  };
+
   return (
     <div style={{ backgroundColor: '#FAF8FF', minHeight: '100vh' }}>
       <Header
@@ -45,6 +49,7 @@ export const Main = () => {
           </Col>
           <Col md={4}>
             <PropertyList
+              moveToLocation={moveToLocation} // moveToLocation 전달
               data={buildings}
             />
           </Col>

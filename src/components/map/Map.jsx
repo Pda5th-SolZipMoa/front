@@ -7,6 +7,8 @@ const Map = ({ keyword, onSearchResults, selectedLocation }) => {
 
   const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
 
+  const mapMarkerImage = 'map_marker.png'; // 커스텀 마커 이미지 경로
+
   const loadMapScript = () => {
     const script = document.createElement('script');
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_KEY}&libraries=services,clusterer&autoload=false`;
@@ -33,8 +35,14 @@ const Map = ({ keyword, onSearchResults, selectedLocation }) => {
                   longitude,
                 );
 
+                const markerImage = new window.kakao.maps.MarkerImage(
+                  mapMarkerImage, // 커스텀 마커 이미지
+                  new window.kakao.maps.Size(32, 32), // 마커 크기 조정
+                );
+
                 const marker = new window.kakao.maps.Marker({
                   position: locPosition,
+                  image: markerImage, // 커스텀 마커 이미지 설정
                 });
 
                 map.setCenter(locPosition);
@@ -88,8 +96,14 @@ const Map = ({ keyword, onSearchResults, selectedLocation }) => {
 
           data.forEach((place) => {
             const position = new window.kakao.maps.LatLng(place.y, place.x);
+            const markerImage = new window.kakao.maps.MarkerImage(
+              mapMarkerImage, // 커스텀 마커 이미지
+              new window.kakao.maps.Size(32, 32), // 마커 크기
+            );
+
             const marker = new window.kakao.maps.Marker({
               position: position,
+              image: markerImage, // 커스텀 마커 이미지 설정
             });
 
             marker.setMap(map);
@@ -103,10 +117,23 @@ const Map = ({ keyword, onSearchResults, selectedLocation }) => {
   };
 
   const moveToLocation = (location) => {
-    if (window.map && location) {
+    if (window.map && location && window.kakao && window.kakao.maps) {
       const { latitude, longitude } = location;
       const newCenter = new window.kakao.maps.LatLng(latitude, longitude);
       window.map.setCenter(newCenter); // 지도 중심 이동
+
+      // 커스텀 마커 추가
+      const markerImage = new window.kakao.maps.MarkerImage(
+        mapMarkerImage,
+        new window.kakao.maps.Size(32, 32),
+      );
+
+      const marker = new window.kakao.maps.Marker({
+        position: newCenter,
+        image: markerImage,
+      });
+
+      marker.setMap(window.map);
     }
   };
 
@@ -115,16 +142,16 @@ const Map = ({ keyword, onSearchResults, selectedLocation }) => {
   }, []);
 
   useEffect(() => {
-    if (keyword) {
-      searchPlaces();
-    }
-  }, [keyword]);
-
-  useEffect(() => {
     if (selectedLocation) {
-      moveToLocation(selectedLocation); // 선택된 위치로 이동
+      moveToLocation(selectedLocation); 
     }
   }, [selectedLocation]);
+
+  useEffect(() => {
+    if (keyword) {
+      searchPlaces(); // 키워드가 변경되면 검색 함수 실행
+    }
+  }, [keyword]); 
 
   return (
     <Card className="mb-4" style={{ height: '100%', border: 'none' }}>
