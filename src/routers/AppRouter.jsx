@@ -3,7 +3,7 @@ import MainPage from '../pages/main/MainPage';
 import Signup from '../pages/home/Signup';
 import Login from '../pages/home/Login';
 import DetailIndex from '../pages/property_detail/info/DetailIndex';
-
+import TradeMain from '../pages/property_detail/trade/TradeMain';
 
 const AppRouter = createBrowserRouter([
   {
@@ -21,7 +21,11 @@ const AppRouter = createBrowserRouter([
   {
     path: '/property_detail/info/:id',
     element: <DetailIndex/>,
-  }
+  },
+  {
+    path: '/property/:id/trade',
+    element: <TradeMain />,
+  },
 ]);
 
 export default AppRouter;
