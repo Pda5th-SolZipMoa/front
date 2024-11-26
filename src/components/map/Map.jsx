@@ -25,7 +25,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
             const container = document.getElementById('map');
             const options = {
               center: new window.kakao.maps.LatLng(37.545178, 127.056847),
-              level: 3,
+              level: 9,
             };
             const kakaoMap = new window.kakao.maps.Map(container, options);
             setMap(kakaoMap);
@@ -41,7 +41,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
       };
     };
 
-      setLoading(false);
+    setLoading(false);
     loadMapScript();
   }, []);
 
@@ -146,6 +146,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
         selectedLocation.longitude,
       );
       map.setCenter(position);
+      map.setLevel(4);
     }
   }, [selectedLocation]);
 
@@ -168,6 +169,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
             latitude: parseFloat(result.y),
             longitude: parseFloat(result.x),
           }));
+          map.setLevel(4);
           onSearchResults(formattedResults); // 부모 컴포넌트로 검색 결과 전달
         } else {
           console.error('검색 결과가 없습니다.');
