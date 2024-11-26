@@ -10,6 +10,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
   const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
 
   const mapMarkerImage = '/map_apt_marker.png'; // 커스텀 마커 이미지
+  const searchMarkerImage = '/map_marker.png'; // 검색 마커 이미지
 
   // Kakao Maps 스크립트 로드
   useEffect(() => {
@@ -44,44 +45,17 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
     loadMapScript();
   }, []);
 
-  const searchPlaces = () => {
-    if (window.kakao && window.kakao.maps) {
-      const map = window.map;
-      const ps = new window.kakao.maps.services.Places();
+  // 모든 빌딩 마커 제거
+  const clearBuildingMarkers = () => {
+    buildingMarkers.forEach((marker) => marker.setMap(null));
+    setBuildingMarkers([]);
+  };
 
-      ps.keywordSearch(keyword, (data, status) => {
-        if (status === window.kakao.maps.services.Status.OK) {
-          markers.forEach((marker) => marker.setMap(null));
-
-          const newMarkers = [];
-          const searchResults = data.map((place) => ({
-            name: place.place_name,
-            address: place.address_name,
-            latitude: place.y,
-            longitude: place.x,
-          }));
-
-          onSearchResults(searchResults);
-
-          data.forEach((place) => {
-            const position = new window.kakao.maps.LatLng(place.y, place.x);
-            const markerImage = new window.kakao.maps.MarkerImage(
-              mapMarkerImage, // 커스텀 마커 이미지
-              new window.kakao.maps.Size(32, 32), // 마커 크기
-            );
-
-            const marker = new window.kakao.maps.Marker({
-              position: position,
-              image: markerImage, // 커스텀 마커 이미지 설정
-            });
-
-            marker.setMap(map);
-            newMarkers.push(marker);
-          });
-
-          setMarkers(newMarkers);
-        }
-      });
+  // 검색 마커 제거
+  const clearSearchMarker = () => {
+    if (searchMarker) {
+      searchMarker.setMap(null);
+      setSearchMarker(null);
     }
   };
 
@@ -91,7 +65,8 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
 
     const position = new window.kakao.maps.LatLng(latitude, longitude);
 
-    const markerImageSrc = mapMarkerImage;
+    const markerImageSrc =
+      type === 'search' ? searchMarkerImage : mapMarkerImage;
     const markerImage = new window.kakao.maps.MarkerImage(
       markerImageSrc,
       new window.kakao.maps.Size(40, 40),
@@ -159,7 +134,18 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
   // 선택된 장소 이동 및 검색 마커 추가
   useEffect(() => {
     if (selectedLocation) {
-      moveToLocation(selectedLocation);
+      addMarker({
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+        type: 'search', // 검색 마커
+      });
+
+      // 지도 중심 이동
+      const position = new window.kakao.maps.LatLng(
+        selectedLocation.latitude,
+        selectedLocation.longitude,
+      );
+      map.setCenter(position);
     }
   }, [selectedLocation]);
 
@@ -172,8 +158,22 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
 
   // 키워드 검색 시 처리
   useEffect(() => {
-    if (keyword) {
-      searchPlaces(); // 키워드가 변경되면 검색 함수 실행
+    if (keyword && map) {
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(keyword, (results, status) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          const formattedResults = results.map((result) => ({
+            name: result.place_name,
+            address: result.address_name,
+            latitude: parseFloat(result.y),
+            longitude: parseFloat(result.x),
+          }));
+          onSearchResults(formattedResults); // 부모 컴포넌트로 검색 결과 전달
+        } else {
+          console.error('검색 결과가 없습니다.');
+          onSearchResults([]); // 검색 결과 없음 처리
+        }
+      });
     }
   }, [keyword, map]);
 

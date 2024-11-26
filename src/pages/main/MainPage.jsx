@@ -50,7 +50,7 @@ export const Main = () => {
               keyword={searchQuery}
               onSearchResults={setSearchResults}
               selectedLocation={selectedLocation} // 선택된 위치 전달
-              data={buildings}
+              data={buildings} // 빌딩 데이터 전달
             />
           </Col>
           <Col md={4}>
