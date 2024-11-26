@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { PropertyInput } from './FormInput';
-
+const VITE_KAKAO_MAP_KEY_RESTAPI = import.meta.env.VITE_KAKAO_MAP_KEY_RESTAPI;
 export const PropertyContents = ({ formData, setFormData }) => {
   const [isAddressOpen, setIsAddressOpen] = useState(false);
 
@@ -21,6 +21,38 @@ export const PropertyContents = ({ formData, setFormData }) => {
     loadKakaoScript();
   }, []);
 
+  // 주소 검색 완료 후 위도/경도를 가져오는 함수
+  const fetchCoordinates = async (address) => {
+    try {
+      const response = await fetch(
+        `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`,
+        {
+          headers: {
+            Authorization: `KakaoAK ${VITE_KAKAO_MAP_KEY_RESTAPI}`, // REST API 키 사용
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        console.error('API 호출 실패:', await response.json());
+        return;
+      }
+  
+      const data = await response.json();
+      if (data.documents && data.documents.length > 0) {
+        const { x, y } = data.documents[0];
+        console.log('위도:', y, '경도:', x);
+      } else {
+        console.error('결과가 없습니다.');
+      }
+    } catch (error) {
+      console.error('API 호출 에러:', error);
+    }
+  };
+  
+  
+
+  // 주소 검색 함수
   const handleAddressClick = () => {
     if (!window.daum || !window.daum.Postcode) {
       console.error('Kakao API script is not loaded');
@@ -32,6 +64,9 @@ export const PropertyContents = ({ formData, setFormData }) => {
         // 주소 데이터를 가져오면 formData 업데이트
         setFormData({ ...formData, address: data.address });
         setIsAddressOpen(false);
+
+        // 주소 검색 완료 후 실행할 작업
+        fetchCoordinates(data.address); // 위도/경도 가져오기
       },
       onclose: function () {
         setIsAddressOpen(false); // 모달 닫기 시 상태 업데이트
