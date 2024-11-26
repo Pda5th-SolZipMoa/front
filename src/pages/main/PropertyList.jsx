@@ -47,19 +47,29 @@ const listStyles = {
     borderStyle: 'solid',
     borderRadius: '5px',
     borderImage:
-      'linear-gradient(180deg, #A8B3F2 0%, #B690EE 21%, #F68EA3 57.5%, #FBAD7A 99.5%)',
+      'linear-gradient(117deg, #A8B3F2 10%, #B690EE 30%, #D28BBD 55%, #F68EA3 80%)',
     borderImageSlice: 1,
   },
 };
 
-const PropertyList = ({ moveToLocation, data }) => {
+const PropertyList = ({ moveToLocation, data, handleRoute }) => {
   return (
     <div style={listStyles.container}>
       <div
         style={listStyles.header}
         className="d-flex justify-content-between align-items-center"
       >
-        <h5 style={{ color: '#59167E' }}>주변 SOL집 찾기</h5>
+        <h5
+          style={{
+            background:
+              'linear-gradient(117deg, #A8B3F2 10%, #B690EE 30%, #D28BBD 55%, #F68EA3 80%)',
+            WebkitBackgroundClip: 'text', // 텍스트 부분만 그라디언트 표시
+            WebkitTextFillColor: 'transparent', // 텍스트 채우기 투명
+            fontWeight: 'bold', // 추가적으로 텍스트 스타일 조정
+          }}
+        >
+          주변 SOL집 찾기
+        </h5>
         <Form.Select style={listStyles.select}>
           <option>수익률순</option>
           <option>가격순</option>
@@ -70,6 +80,7 @@ const PropertyList = ({ moveToLocation, data }) => {
         {data?.map((property, index) => (
           <PropertyCard
             key={index}
+            id={property.id}
             name={property.name}
             image={property.photos[0]?.url}
             price={property.price}
@@ -79,6 +90,7 @@ const PropertyList = ({ moveToLocation, data }) => {
             lat={property.lat}
             lng={property.lng}
             moveToLocation={moveToLocation}
+            handleRoute={handleRoute}
           />
         ))}
       </div>

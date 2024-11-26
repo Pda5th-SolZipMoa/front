@@ -5,12 +5,14 @@ import Header from '../../components/header/Header';
 import Map from '../../components/map/Map';
 import PropertyList from './PropertyList';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export const Main = () => {
   const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
   const [searchResults, setSearchResults] = useState([]); // 검색 결과 상태
   const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 상태
   const [buildings, setBuildings] = useState([]); // 빌딩 개수
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBuildingLists = async () => {
@@ -27,6 +29,10 @@ export const Main = () => {
 
   const moveToLocation = (latitude, longitude) => {
     setSelectedLocation({ latitude, longitude });
+  };
+
+  const handleRouteButton = (id) => {
+    navigate(`/property_detail/info/${id}`);
   };
 
   return (
@@ -51,6 +57,7 @@ export const Main = () => {
             <PropertyList
               moveToLocation={moveToLocation} // moveToLocation 전달
               data={buildings}
+              handleRoute={handleRouteButton}
             />
           </Col>
         </Row>

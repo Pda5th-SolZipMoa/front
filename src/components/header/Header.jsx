@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Navbar, Form, Dropdown, Button } from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
 import custom_header from './header.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({
   searchQuery,
@@ -10,6 +11,7 @@ const Header = ({
   onSelectLocation,
 }) => {
   const [placeholder, setPlaceholder] = useState('검색어 입력'); // Placeholder 상태 추가
+  const navigate = useNavigate();
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value); // 검색어 업데이트
@@ -107,6 +109,9 @@ const Header = ({
             <span className="ms-2">마이페이지</span>
           </Button>
           <Button
+            onClick={() => {
+              navigate('/property_create');
+            }}
             style={{
               backgroundColor: '#6f42c1',
               color: 'white',
