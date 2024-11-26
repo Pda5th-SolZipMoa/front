@@ -4,6 +4,7 @@ import Signup from '../pages/home/Signup';
 import Login from '../pages/home/Login';
 import DetailIndex from '../pages/property_detail/info/DetailIndex';
 import TradeMain from '../pages/property_detail/trade/TradeMain';
+import FormIndex from '../pages/property_create/FormIndex'
 
 const AppRouter = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const AppRouter = createBrowserRouter([
   {
     path: '/property/:id/trade',
     element: <TradeMain />,
+  },
+  {
+    path: '/property_create',
+    element: <FormIndex />,
   },
 ]);
 
