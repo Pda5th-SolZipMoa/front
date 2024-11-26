@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import PropertyCard from './PropertyCard';
 
-// Custom scrollbar styles
 const scrollbarStyles = `
   .custom-scrollbar::-webkit-scrollbar {
     width: 12px;
@@ -53,6 +52,21 @@ const listStyles = {
 };
 
 const PropertyList = ({ moveToLocation, data, handleRoute }) => {
+  const [sortOrder, setSortOrder] = useState('수익률순'); // 정렬 기준
+
+  // 정렬 로직
+  console.log(data);
+  const sortedData = [...data].sort((a, b) => {
+    if (sortOrder === '수익률순') {
+      return b.percentage - a.percentage;
+    } else if (sortOrder === '가격순') {
+      return a.price - b.price;
+    } else if (sortOrder === '최신순') {
+      return new Date(b.created_at) - new Date(a.created_at); // 최신 순
+    }
+    return 0;
+  });
+
   return (
     <div style={listStyles.container}>
       <div
@@ -63,21 +77,25 @@ const PropertyList = ({ moveToLocation, data, handleRoute }) => {
           style={{
             background:
               'linear-gradient(117deg, #A8B3F2 10%, #B690EE 30%, #D28BBD 55%, #F68EA3 80%)',
-            WebkitBackgroundClip: 'text', // 텍스트 부분만 그라디언트 표시
-            WebkitTextFillColor: 'transparent', // 텍스트 채우기 투명
-            fontWeight: 'bold', // 추가적으로 텍스트 스타일 조정
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontWeight: 'bold',
           }}
         >
           주변 SOL집 찾기
         </h5>
-        <Form.Select style={listStyles.select}>
+        <Form.Select
+          style={listStyles.select}
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+        >
           <option>수익률순</option>
           <option>가격순</option>
           <option>최신순</option>
         </Form.Select>
       </div>
       <div style={listStyles.cardList} className="custom-scrollbar">
-        {data?.map((property, index) => (
+        {sortedData?.map((property, index) => (
           <PropertyCard
             key={index}
             id={property.id}
