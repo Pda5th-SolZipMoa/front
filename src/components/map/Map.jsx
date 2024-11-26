@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 
 const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
   const [loading, setLoading] = useState(true);
@@ -131,6 +131,37 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
     });
   };
 
+  // 현 위치로 이동
+  const moveToCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation을 지원하지 않는 브라우저입니다.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+
+        const positionLatLng = new window.kakao.maps.LatLng(
+          latitude,
+          longitude,
+        );
+        map.setCenter(positionLatLng);
+        map.setLevel(4);
+
+        addMarker({
+          latitude,
+          longitude,
+          type: 'search',
+        });
+      },
+      (error) => {
+        console.error('Error getting current location:', error);
+        alert('현재 위치를 가져올 수 없습니다.');
+      },
+    );
+  };
+
   // 선택된 장소 이동 및 검색 마커 추가
   useEffect(() => {
     if (selectedLocation) {
@@ -199,13 +230,34 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
           </div>
         </div>
       ) : (
-        <div
-          id="map"
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-        ></div>
+        <div style={{ position: 'relative', height: '100%' }}>
+          {/* 지도 영역 */}
+          <div
+            id="map"
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+          ></div>
+
+          {/* 위치 이동 버튼 */}
+          <Button
+            variant="primary"
+            style={{
+              position: 'absolute',
+              bottom: '20px',
+              right: '20px',
+              zIndex: 1000,
+              background:
+                'linear-gradient(117deg, #AE70D0 7.71%, #B690EE 38.78%, #F68EA3 66.59%)',
+              border: 'none',
+              color: '#fff',
+            }}
+            onClick={moveToCurrentLocation}
+          >
+           현 위치로 이동
+          </Button>
+        </div>
       )}
     </Card>
   );
