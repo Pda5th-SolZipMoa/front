@@ -6,12 +6,8 @@ export const PropertyPhoto = ({ images, setImages }) => {
     const newImages = [...images];
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        newImages[index] = reader.result;
-        setImages(newImages);
-      };
-      reader.readAsDataURL(file);
+      newImages[index] = file; // File 객체를 상태에 저장
+      setImages(newImages);
     }
   };
 
@@ -19,6 +15,12 @@ export const PropertyPhoto = ({ images, setImages }) => {
     if (images.length < 3) {
       setImages([...images, null]);
     }
+  };
+
+  const removeImage = (index) => {
+    const newImages = [...images];
+    newImages.splice(index, 1); // 해당 인덱스의 이미지를 제거
+    setImages(newImages);
   };
 
   return (
@@ -29,7 +31,7 @@ export const PropertyPhoto = ({ images, setImages }) => {
           <div key={index} className="position-relative" style={{ width: '200px', height: '200px' }}>
             {image ? (
               <Image 
-                src={image} 
+                src={URL.createObjectURL(image)} // File 객체를 미리보기 URL로 변환
                 alt={`Building ${index + 1}`} 
                 style={{ width: '200px', height: '200px', objectFit: 'cover' }}
               />
@@ -42,6 +44,14 @@ export const PropertyPhoto = ({ images, setImages }) => {
                 <span>+</span>
               </div>
             )}
+            <Button 
+              variant="danger" 
+              size="sm" 
+              className="position-absolute top-0 end-0"
+              onClick={() => removeImage(index)}
+            >
+              ×
+            </Button>
             <Form.Control
               id={`image-input-${index}`}
               type="file"
@@ -62,9 +72,8 @@ export const PropertyPhoto = ({ images, setImages }) => {
         )}
       </div>
       <Form.Text className="text-muted">
-        최대 3장까지 업로드가능합니다.
+        최대 3장까지 업로드 가능합니다.
       </Form.Text>
     </Form.Group>
   );
 };
-

@@ -6,22 +6,85 @@ import { PropertyDocs } from './FormDocs';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PropertyCreate = () => {
-  const [images, setImages] = useState([null]);
+  const [images, setImages] = useState([]); // 초기값 수정
   const [formData, setFormData] = useState({
-    buildingName: '',
+    name: '',
     address: '',
-    currentPrice: '',
-    totalSupply: '',
-    tokenPrice: '',
-    availableTokens: '',
+    token_supply: '',
+    created_at:'',
+    price: '',
+    owner_id:'',
+    building_code: '',
+    platArea:'',
+    bcRat:'',
+    totArea:'',
+    vlRat:'',
+    lat: '',
+    lng: '',
     legalDocs: '',
     legalNotice: false,
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    console.log('Images:', images);
+
+    // FormData 생성
+    const data = new FormData();
+
+    // 필요한 필드만 추가
+    const requiredFields = [
+      'name',
+      'address',
+      'token_supply',
+      'price',
+      'building_code',
+      'lat',
+      'lng',
+      'legalDocs',
+      'legalNotice',
+    ];
+
+    for (const key of requiredFields) {
+      if (key === 'legalNotice') {
+        // Boolean 값 처리
+        data.append(key, formData[key] ? 'true' : 'false');
+      } else {
+        data.append(key, formData[key]);
+      }
+    }
+
+    // 이미지 추가
+    images.forEach((image, index) => {
+      if (image) {
+        data.append(`images`, image); // 동일한 키 사용
+      }
+    });
+
+    // 디버깅용: FormData 출력
+    for (let pair of data.entries()) {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
+
+    // 서버로 데이터 전송
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/apartments/token', {
+        method: 'POST',
+        body: data,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('토큰 발행 성공!');
+        console.log('Response:', result);
+      } else {
+        alert(`오류 발생: ${result.detail}`);
+        console.error('Error:', result);
+      }
+    } catch (error) {
+      console.error('서버 통신 에러:', error);
+      alert('서버와의 통신에 문제가 발생했습니다.');
+    }
   };
 
   return (

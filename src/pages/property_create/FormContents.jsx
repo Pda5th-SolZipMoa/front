@@ -40,8 +40,29 @@ export const PropertyContents = ({ formData, setFormData }) => {
   
       const data = await response.json();
       if (data.documents && data.documents.length > 0) {
-        const { x, y } = data.documents[0];
-        console.log('위도:', y, '경도:', x);
+        const { x, y, address: addr } = data.documents[0];
+  
+        // 빌딩 코드 규칙에 따라 생성
+        const b_code = addr?.b_code || '0000000000'; // 10자리 기본값
+        const main_address_no = addr?.main_address_no || ''; // 주 번지
+        const sub_address_no = addr?.sub_address_no || ''; // 부 번지
+  
+        // 4자리 숫자로 맞추기
+        const main_address_no_padded = main_address_no.padStart(4, '0'); // 빈 경우 '0000'
+        const sub_address_no_padded = sub_address_no.padStart(4, '0'); // 빈 경우 '0000'
+  
+        // 최종 building_code 생성
+        const building_code = `${b_code}0${main_address_no_padded}${sub_address_no_padded}`;
+  
+        console.log('위도:', y, '경도:', x, 'building_code:', building_code);
+  
+        // 상태 업데이트
+        setFormData((prev) => ({
+          ...prev,
+          lat: y,
+          lng: x,
+          building_code: building_code,
+        }));
       } else {
         console.error('결과가 없습니다.');
       }
@@ -49,6 +70,7 @@ export const PropertyContents = ({ formData, setFormData }) => {
       console.error('API 호출 에러:', error);
     }
   };
+  
   
   
 
@@ -79,9 +101,9 @@ export const PropertyContents = ({ formData, setFormData }) => {
       <PropertyInput
         label="건물명"
         placeholder="건물의 이름을 입력하세요"
-        value={formData.buildingName}
+        value={formData.name}
         onChange={(e) =>
-          setFormData({ ...formData, buildingName: e.target.value })
+          setFormData({ ...formData, name: e.target.value })
         }
       />
 
@@ -99,9 +121,9 @@ export const PropertyContents = ({ formData, setFormData }) => {
             label="현재 시세"
             type="number"
             placeholder="500"
-            value={formData.currentPrice}
+            value={formData.price}
             onChange={(e) =>
-              setFormData({ ...formData, currentPrice: e.target.value })
+              setFormData({ ...formData, price: e.target.value })
             }
             suffix="만원"
           />
@@ -111,9 +133,9 @@ export const PropertyContents = ({ formData, setFormData }) => {
             label="발행수량"
             type="number"
             placeholder="100"
-            value={formData.totalSupply}
+            value={formData.token_supply}
             onChange={(e) =>
-              setFormData({ ...formData, totalSupply: e.target.value })
+              setFormData({ ...formData, token_supply: e.target.value })
             }
             suffix="개"
           />
