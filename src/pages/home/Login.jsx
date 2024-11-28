@@ -7,6 +7,23 @@ export default function Login() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅
 
+  // 전화번호 형식 변경 함수
+  const formatPhoneNumber = (value) => {
+    const onlyNumbers = value.replace(/[^0-9]/g, '');
+    if (onlyNumbers.length <= 3) {
+      return onlyNumbers;
+    } else if (onlyNumbers.length <= 7) {
+      return `${onlyNumbers.slice(0, 3)}-${onlyNumbers.slice(3)}`;
+    } else {
+      return `${onlyNumbers.slice(0, 3)}-${onlyNumbers.slice(3, 7)}-${onlyNumbers.slice(7, 11)}`;
+    }
+  };
+
+  const handlePhoneNumberChange = (e) => {
+    const formattedPhone = formatPhoneNumber(e.target.value);
+    setPhoneNumber(formattedPhone);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -26,7 +43,19 @@ export default function Login() {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100">
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh', // 화면 전체 높이
+        width: '100vw', // 화면 전체 너비
+        background: 'linear-gradient(100deg, #F3EDFB 56.38%, #FAE7F7 98.45%)',
+        margin: 0, // 여백 제거
+        padding: 0, // 패딩 제거
+        overflow: 'hidden', // 필요 시 스크롤 방지
+      }}
+    >
       <div className="card shadow-sm" style={{ width: '400px' }}>
         <div className="card-body p-4">
           <h2 className="text-center mb-4">로그인</h2>
@@ -39,9 +68,10 @@ export default function Login() {
                 type="tel"
                 className="form-control"
                 id="phoneNumber"
-                placeholder="01012345678"
+                placeholder="010-1234-5678"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={handlePhoneNumberChange}
+                maxLength={13} // 최대 길이 제한
                 required
               />
             </div>
