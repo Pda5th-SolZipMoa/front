@@ -35,15 +35,11 @@ export default function Signup() {
     };
 
     try {
-      const response = await axios.post(
-        'http://127.0.0.1:8000/api/signup',
-        data,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const response = await axios.post('/api/signup', data, {
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
 
       if (response.status === 200 || response.status === 201) {
         alert('회원가입 성공!');
