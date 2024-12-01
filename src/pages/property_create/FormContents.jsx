@@ -72,7 +72,6 @@ export const PropertyContents = ({ formData, setFormData }) => {
   };
   
   
-  
 
   // 주소 검색 함수
   const handleAddressClick = () => {
@@ -113,6 +112,45 @@ export const PropertyContents = ({ formData, setFormData }) => {
         value={formData.address}
         onClick={handleAddressClick} // 클릭 시 API 호출
         readOnly // 텍스트 필드 직접 입력 방지
+      />
+
+      
+      <PropertyInput
+        label="층수"
+        placeholder="층수를 입력하세요"
+        value={formData.detail_floor}
+        onChange={(e) =>
+          setFormData({ ...formData, detail_floor: e.target.value })
+        }
+      />
+
+
+      <PropertyInput
+        label="방 개수"
+        placeholder="방 개수를 입력하세요"
+        value={formData.room_cnt}
+        onChange={(e) =>
+          setFormData({ ...formData, room_cnt: e.target.value })
+        }
+      />
+
+
+      <PropertyInput
+        label="집 평수"
+        placeholder="집 평수를 입력하세요"
+        value={formData.home_size}
+        onChange={(e) =>
+          setFormData({ ...formData, home_size: e.target.value })
+        }
+      />
+
+      <PropertyInput
+        label="유지비"
+        placeholder="유지비를 입력하세요"
+        value={formData.maintenance_cost}
+        onChange={(e) =>
+          setFormData({ ...formData, maintenance_cost: e.target.value })
+        }
       />
 
       <Row>

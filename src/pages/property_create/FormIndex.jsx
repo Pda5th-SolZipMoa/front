@@ -22,7 +22,12 @@ const PropertyCreate = () => {
     lat: '',
     lng: '',
     legalDocs: '',
-    legalNotice: false,
+    legalNotice: false, 
+    detail_floor: '',       // 추가
+    home_size: '',          // 추가
+    room_cnt: '',           // 추가
+    maintenance_cost: '',   // 추가
+    
   });
 
   const handleSubmit = async (e) => {
@@ -42,6 +47,10 @@ const PropertyCreate = () => {
       'lng',
       'legalDocs',
       'legalNotice',
+      'detail_floor',      // 추가
+      'home_size',         // 추가
+      'room_cnt',          // 추가
+      'maintenance_cost',  // 추가
     ];
 
     for (const key of requiredFields) {
