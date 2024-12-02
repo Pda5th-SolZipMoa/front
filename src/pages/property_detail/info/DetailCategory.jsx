@@ -112,10 +112,10 @@ export default function DetailCategory({
           </Modal.Header>
           <Modal.Body>
             <h5>기본 정보</h5>
-            <p>층수: {selectedDetail['층수']}</p>
-            <p>방 개수: {selectedDetail['방 개수']}</p>
-            <p>유지비: {selectedDetail['유지비']}</p>
-            <p>집 평수: {selectedDetail['집 평수']}</p>
+            <p>층수: {selectedDetail['층수']} 층</p>
+            <p>방 개수: {selectedDetail['방 개수']} (방/화장실)</p>
+            <p>유지비: {selectedDetail['유지비']} 만원</p>
+            <p>집 평수: {selectedDetail['집 평수']} 평</p>
 
             <h5 className="mt-4">이미지</h5>
             <Row>
@@ -141,13 +141,6 @@ export default function DetailCategory({
           </Modal.Footer>
         </Modal>
       )}
-
-      {/* 토큰 발행정보 */}
-      <div className="mt-5 p-4" style={{ backgroundColor: 'white', borderRadius: '8px' }}>
-        <p className="common-title">토큰 발행정보</p>
-        <div className="common-line"></div>
-        {/* 여기에 토큰 발행정보를 채워주세요 */}
-      </div>
 
       {/* 건물 정보 */}
       <div className="mt-5 p-4" style={{ backgroundColor: 'white', borderRadius: '8px' }}>
