@@ -26,16 +26,22 @@ export default function PropertyDetail() {
   useEffect(() => {
     const fetchBuildingData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/building-latest-transactions/${id}`);
+        const response = await axios.get(`/api/building-latest-transactions/${id}`);
 
         if (response.status === 200) {
           const data = response.data;
           setBuildingData(data);
-
+          
           // 이미지 URL 설정
-          const imageUrls = data['건물정보']['이미지URL'];
+          let imageUrls = data['건물정보']['건물사진'];
+
           if (imageUrls && imageUrls.length > 0) {
-            const fullImageUrls = imageUrls.map((url) => `http://localhost:8000/static/${url}`);
+            // imageUrls가 문자열이면 배열로 변환
+            if (typeof imageUrls === 'string') {
+              imageUrls = [imageUrls];
+            }
+            
+            const fullImageUrls = imageUrls.map((url) => `http://localhost:8000/${url}`);
             setSelectedImage(fullImageUrls[0]);
             setThumbnails(fullImageUrls);
           } else {
@@ -49,7 +55,7 @@ export default function PropertyDetail() {
           if (propertyDetails && propertyDetails.length > 0) {
             const firstDetail = propertyDetails[0];
             try {
-              const imageResponse = await axios.get(`http://localhost:8000/api/property-detail-images/${firstDetail.id}`);
+              const imageResponse = await axios.get(`/api/property-detail-images/${firstDetail.id}`);
               if (imageResponse.status === 200) {
                 const images = imageResponse.data['이미지URL'];
                 const detailWithImages = {
@@ -75,14 +81,14 @@ export default function PropertyDetail() {
         setLoading(false);
       }
     };
-
+    
     fetchBuildingData();
   }, [id]);
 
   // 매물 선택 핸들러
   const handleSelectDetail = async (detail) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/property-detail-images/${detail.id}`);
+      const response = await axios.get(`/api/property-detail-images/${detail.id}`);
       if (response.status === 200) {
         const images = response.data['이미지URL'];
         const detailWithImages = {

@@ -1,42 +1,41 @@
 import React, { useState } from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
 import { PropertyContents } from './FormContents';
-import { PropertyPhoto } from './FormPhoto';
+import { PropertyPhoto } from './FormPhoto'; // 상세 매물 이미지 컴포넌트 유지
 import { PropertyDocs } from './FormDocs';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PropertyCreate = () => {
-  const [images, setImages] = useState([]); // 초기값 수정
+  const [images, setImages] = useState([]); // 상세 매물 이미지를 관리
+  const [hasBuildingInfo, setHasBuildingInfo] = useState(false); // 빌딩 코드 존재 여부 상태 추가
   const [formData, setFormData] = useState({
     name: '',
     address: '',
     token_supply: '',
-    created_at:'',
+    created_at: '',
     price: '',
-    owner_id:'',
+    owner_id: '',
     building_code: '',
-    platArea:'',
-    bcRat:'',
-    totArea:'',
-    vlRat:'',
+    platArea: '', 
+    bcRat: '',
+    totArea: '',
+    vlRat: '',
     lat: '',
     lng: '',
-    legalDocs: '',
-    legalNotice: false, 
-    detail_floor: '',       // 추가
-    home_size: '',          // 추가
-    room_cnt: '',           // 추가
-    maintenance_cost: '',   // 추가
-    
+    property_photo: null,
+    legalDocs: null,
+    legalNotice: false,
+    detail_floor: '',
+    home_size: '',
+    room_cnt: '',
+    maintenance_cost: '',
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // FormData 생성
     const data = new FormData();
 
-    // 필요한 필드만 추가
     const requiredFields = [
       'name',
       'address',
@@ -45,38 +44,31 @@ const PropertyCreate = () => {
       'building_code',
       'lat',
       'lng',
+      'property_photo',
       'legalDocs',
       'legalNotice',
-      'detail_floor',      // 추가
-      'home_size',         // 추가
-      'room_cnt',          // 추가
-      'maintenance_cost',  // 추가
+      'detail_floor',
+      'home_size',
+      'room_cnt',
+      'maintenance_cost',
     ];
 
     for (const key of requiredFields) {
       if (key === 'legalNotice') {
-        // Boolean 값 처리
         data.append(key, formData[key] ? 'true' : 'false');
-      } else {
+      } else if (formData[key]) {
         data.append(key, formData[key]);
       }
     }
 
-    // 이미지 추가
-    images.forEach((image, index) => {
+    images.forEach((image) => {
       if (image) {
-        data.append(`images`, image); // 동일한 키 사용
+        data.append('images', image);
       }
     });
 
-    // 디버깅용: FormData 출력
-    for (let pair of data.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-
-    // 서버로 데이터 전송
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/apartments/token', {
+      const response = await fetch('/api/apartments/token', {
         method: 'POST',
         body: data,
       });
@@ -104,7 +96,13 @@ const PropertyCreate = () => {
       <h2 className="mb-4">부동산 토큰 발행</h2>
 
       <Form onSubmit={handleSubmit}>
-        <PropertyContents formData={formData} setFormData={setFormData} />
+        {/* 메인 건물 정보와 이미지를 입력 */}
+        <PropertyContents
+          formData={formData}
+          setFormData={setFormData}
+          setHasBuildingInfo={setHasBuildingInfo} // 빌딩 코드 존재 여부 상태 전달
+        />
+        {/* 상세 매물 이미지를 입력 */}
         <PropertyPhoto images={images} setImages={setImages} />
         <PropertyDocs formData={formData} setFormData={setFormData} />
 

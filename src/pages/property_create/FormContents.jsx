@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { PropertyInput } from './FormInput';
 const VITE_KAKAO_MAP_KEY_RESTAPI = import.meta.env.VITE_KAKAO_MAP_KEY_RESTAPI;
+
 export const PropertyContents = ({ formData, setFormData }) => {
   const [isAddressOpen, setIsAddressOpen] = useState(false);
+  const [hasBuildingInfo, setHasBuildingInfo] = useState(false); 
+  const fileInputRef = useRef(null); // 파일 입력 필드 참조
+
 
   // 스크립트 로드 함수
   const loadKakaoScript = () => {
@@ -32,48 +36,68 @@ export const PropertyContents = ({ formData, setFormData }) => {
           },
         }
       );
-  
+
       if (!response.ok) {
         console.error('API 호출 실패:', await response.json());
         return;
       }
-  
+
       const data = await response.json();
       if (data.documents && data.documents.length > 0) {
         const { x, y, address: addr } = data.documents[0];
-  
-        // 빌딩 코드 규칙에 따라 생성
-        const b_code = addr?.b_code || '0000000000'; // 10자리 기본값
-        const main_address_no = addr?.main_address_no || ''; // 주 번지
-        const sub_address_no = addr?.sub_address_no || ''; // 부 번지
-  
-        // 4자리 숫자로 맞추기
-        const main_address_no_padded = main_address_no.padStart(4, '0'); // 빈 경우 '0000'
-        const sub_address_no_padded = sub_address_no.padStart(4, '0'); // 빈 경우 '0000'
-  
-        // 최종 building_code 생성
+
+        const b_code = addr?.b_code || '0000000000';
+        const main_address_no = addr?.main_address_no || '';
+        const sub_address_no = addr?.sub_address_no || '';
+        const main_address_no_padded = main_address_no.padStart(4, '0');
+        const sub_address_no_padded = sub_address_no.padStart(4, '0');
+
         const building_code = `${b_code}0${main_address_no_padded}${sub_address_no_padded}`;
-  
-        console.log('위도:', y, '경도:', x, 'building_code:', building_code);
-  
-        // 상태 업데이트
+
         setFormData((prev) => ({
           ...prev,
           lat: y,
           lng: x,
           building_code: building_code,
         }));
+        // 빌딩 코드 확인 함수 호출
+        await checkBuildingInfo(building_code);
       } else {
         console.error('결과가 없습니다.');
       }
     } catch (error) {
       console.error('API 호출 에러:', error);
     }
-  };
-  
-  
 
-  // 주소 검색 함수
+  };
+     // DB에서 빌딩 코드 확인 함수
+     const checkBuildingInfo = async (building_code) => {
+      try {
+        const response = await fetch(`/api/properties/check?building_code=${building_code}`);
+        if (!response.ok) {
+          throw new Error('DB 확인 실패');
+        }
+  
+        const result = await response.json();
+        setHasBuildingInfo(result.exists);
+  
+        // 빌딩 정보가 있으면 이미지 삭제
+        if (result.exists) {
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            property_photo: null, // 이미지 삭제
+          }));
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''; // 입력 필드 초기화
+          }
+          alert('이미 등록된 건물입니다. 기존 이미지가 삭제되고 업로드가 비활성화됩니다.');
+        }
+      } catch (error) {
+        console.error('빌딩 코드 확인 에러:', error);
+        setHasBuildingInfo(false);
+      }
+    };
+
   const handleAddressClick = () => {
     if (!window.daum || !window.daum.Postcode) {
       console.error('Kakao API script is not loaded');
@@ -82,17 +106,37 @@ export const PropertyContents = ({ formData, setFormData }) => {
     setIsAddressOpen(true);
     new window.daum.Postcode({
       oncomplete: function (data) {
-        // 주소 데이터를 가져오면 formData 업데이트
         setFormData({ ...formData, address: data.address });
         setIsAddressOpen(false);
-
-        // 주소 검색 완료 후 실행할 작업
-        fetchCoordinates(data.address); // 위도/경도 가져오기
+        fetchCoordinates(data.address);
       },
       onclose: function () {
-        setIsAddressOpen(false); // 모달 닫기 시 상태 업데이트
+        setIsAddressOpen(false);
       },
     }).open();
+  };
+
+  // 메인 건물 사진 변경 핸들러
+  const handlePropertyPhotoChange = (e) => {
+    if (hasBuildingInfo) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        property_photo: null, // 이미지 삭제
+      }));
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // 입력 필드 초기화
+      }
+      alert('이미 등록된 건물입니다. 사진 업로드가 비활성화되었습니다.');
+      return;
+    }
+
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        property_photo: file,
+      }));
+    }
   };
 
   return (
@@ -110,11 +154,10 @@ export const PropertyContents = ({ formData, setFormData }) => {
         label="주소"
         placeholder="건물의 정확한 주소를 입력하세요"
         value={formData.address}
-        onClick={handleAddressClick} // 클릭 시 API 호출
-        readOnly // 텍스트 필드 직접 입력 방지
+        onClick={handleAddressClick}
+        readOnly
       />
 
-      
       <PropertyInput
         label="층수"
         placeholder="층수를 입력하세요"
@@ -124,7 +167,6 @@ export const PropertyContents = ({ formData, setFormData }) => {
         }
       />
 
-
       <PropertyInput
         label="방 개수"
         placeholder="방 개수를 입력하세요"
@@ -133,7 +175,6 @@ export const PropertyContents = ({ formData, setFormData }) => {
           setFormData({ ...formData, room_cnt: e.target.value })
         }
       />
-
 
       <PropertyInput
         label="집 평수"
@@ -180,32 +221,21 @@ export const PropertyContents = ({ formData, setFormData }) => {
         </Col>
       </Row>
 
-      <Row>
-        <Col>
-          <PropertyInput
-            label="토큰 당 가격"
-            type="number"
-            placeholder="5"
-            value={formData.tokenPrice}
-            onChange={(e) =>
-              setFormData({ ...formData, tokenPrice: e.target.value })
-            }
-            suffix="만원"
-          />
-        </Col>
-        <Col>
-          <PropertyInput
-            label="유통 가능 물량"
-            type="number"
-            placeholder="30"
-            value={formData.availableTokens}
-            onChange={(e) =>
-              setFormData({ ...formData, availableTokens: e.target.value })
-            }
-            suffix="개"
-          />
-        </Col>
-      </Row>
+        {/* 메인 건물 사진 업로드 */}
+        <div className="mb-3">
+          <label htmlFor="propertyPhoto">메인 건물 사진</label>
+            <input
+              type="file"
+              id="propertyPhoto"
+              accept="image/*"
+              ref={fileInputRef} // 파일 입력 필드 참조 추가
+              onChange={handlePropertyPhotoChange}
+              disabled={hasBuildingInfo} // 빌딩 정보가 있으면 비활성화
+            />
+          {hasBuildingInfo && (
+            <small className="text-muted">이미 등록된 건물입니다. 사진 업로드가 비활성화되었습니다.</small>
+          )}
+        </div>
     </div>
   );
 };
