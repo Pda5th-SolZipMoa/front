@@ -25,7 +25,7 @@ export const PropertyPhoto = ({ images, setImages }) => {
 
   return (
     <Form.Group className="mb-4">
-      <Form.Label>건물 사진</Form.Label>
+      <Form.Label>집 사진</Form.Label>
       <div className="d-flex flex-wrap gap-3">
         {images.map((image, index) => (
           <div key={index} className="position-relative" style={{ width: '200px', height: '200px' }}>

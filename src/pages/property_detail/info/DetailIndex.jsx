@@ -16,28 +16,61 @@ export default function PropertyDetail() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
+  // 추가된 상태
+  const [selectedDetail, setSelectedDetail] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
   // URL에서 ID 받아오기
   const { id } = useParams();
 
   useEffect(() => {
     const fetchBuildingData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/building-latest-transactions/${id}`);
+        const response = await axios.get(`/api/building-latest-transactions/${id}`);
 
         if (response.status === 200) {
           const data = response.data;
           setBuildingData(data);
-
+          
           // 이미지 URL 설정
-          const imageUrls = data['건물정보']['이미지URL'];
+          let imageUrls = data['건물정보']['건물사진'];
+
           if (imageUrls && imageUrls.length > 0) {
-            setSelectedImage(imageUrls[0]); // 첫 번째 이미지를 메인 이미지로 설정
-            setThumbnails(imageUrls); // 전체 이미지 목록을 썸네일로 설정
+            // imageUrls가 문자열이면 배열로 변환
+            if (typeof imageUrls === 'string') {
+              imageUrls = [imageUrls];
+            }
+            
+            const fullImageUrls = imageUrls.map((url) => `http://localhost:8000/${url}`);
+            setSelectedImage(fullImageUrls[0]);
+            setThumbnails(fullImageUrls);
           } else {
-            // 이미지가 없을 경우 기본 이미지 사용
             const defaultImage = '/placeholder.svg?height=400&width=600';
             setSelectedImage(defaultImage);
             setThumbnails([defaultImage]);
+          }
+
+          // 매물 목록에서 첫 번째 매물의 이미지 가져오기
+          const propertyDetails = data['건물정보']['매물목록'];
+          if (propertyDetails && propertyDetails.length > 0) {
+            const firstDetail = propertyDetails[0];
+            try {
+              const imageResponse = await axios.get(`/api/property-detail-images/${firstDetail.id}`);
+              if (imageResponse.status === 200) {
+                const images = imageResponse.data['이미지URL'];
+                const detailWithImages = {
+                  ...firstDetail,
+                  '이미지URL': images,
+                };
+                setSelectedDetail(detailWithImages);
+              } else {
+                console.error('이미지 데이터를 가져오는데 실패했습니다.');
+                setSelectedDetail(firstDetail);
+              }
+            } catch (imageError) {
+              console.error('이미지 데이터를 가져오는 중 오류가 발생했습니다.', imageError);
+              setSelectedDetail(firstDetail);
+            }
           }
         } else {
           setError('데이터를 가져오는데 실패했습니다.');
@@ -48,9 +81,35 @@ export default function PropertyDetail() {
         setLoading(false);
       }
     };
-
+    
     fetchBuildingData();
   }, [id]);
+
+  // 매물 선택 핸들러
+  const handleSelectDetail = async (detail) => {
+    try {
+      const response = await axios.get(`/api/property-detail-images/${detail.id}`);
+      if (response.status === 200) {
+        const images = response.data['이미지URL'];
+        const detailWithImages = {
+          ...detail,
+          '이미지URL': images,
+        };
+        setSelectedDetail(detailWithImages);
+      } else {
+        console.error('이미지 데이터를 가져오는데 실패했습니다.');
+        setSelectedDetail(detail);
+      }
+    } catch (error) {
+      console.error('이미지 데이터를 가져오는 중 오류가 발생했습니다.', error);
+      setSelectedDetail(detail);
+    }
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   const handleSearch = (query) => {
     // 검색어에 따라 검색 결과를 설정하는 로직 추가
@@ -118,11 +177,17 @@ export default function PropertyDetail() {
 
           {/* Right Column - Details */}
           <Col md={5}>
-            <DetailBox buildingData={buildingData} />
+            <DetailBox buildingData={buildingData} selectedDetail={selectedDetail} />
           </Col>
         </Row>
 
-        <DetailCategory buildingData={buildingData} />
+        <DetailCategory
+          buildingData={buildingData}
+          onSelectDetail={handleSelectDetail}
+          selectedDetail={selectedDetail}
+          showModal={showModal}
+          onCloseModal={handleCloseModal}
+        />
       </Container>
     </div>
   );
