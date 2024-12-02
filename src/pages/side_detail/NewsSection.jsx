@@ -1,45 +1,84 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 function NewsSection() {
-  const newsItems = [
-    {
-      title: "성수동 1가 트리마제 실거래가, 시세, 주변정보",
-      content: "직방시세 : 매매 10억 3,000 ~ 110억 5,000, 평균 1억 89/3.3㎡ - 단지 비교하기. 2022 2023 2024 4월 7일 1억 1.3억 트리마제 성동구 3.3㎡ 당 평균가격 2 - 실거래가",
-      date: "다음 ˑ 2024.4.18"
-    },
-    {
-      title: "성수동 트리마제 3대장 아파트 가성비 좋은 월세 서울숲",
-      content: "성수대교, 강변북로, 올림픽대로, 동부간선도로 등 주요 도로 진입이 굉장히 편리하며 분당선 서울숲역은 도보 5분거리 입니다.",
-      date: "네이버 ˑ 2024.4.18"
-    },
-    {
-      title: "성수동 트리마제 3대장 아파트 가성비 좋은 월세 서울숲",
-      content: "성수대교, 강변북로, 올림픽대로, 동부간선도로 등 주요 도로 진입이 굉장히 편리하며 분당선 서울숲역은 도보 5분거리 입니다.",
-      date: "네이버 ˑ 2024.4.18"
-    },
-  ];
+  const [newsItems, setNewsItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // FastAPI 백엔드에서 '서울숲 트리마제' 뉴스 데이터 가져오기
+    fetch("http://localhost:8000/api/news")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch news data");
+        return res.json();
+      })
+      .then((data) => {
+        setNewsItems(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleMoreClick = () => {
+    // "더보기" 버튼 클릭 시 다음 뉴스 검색 URL로 이동
+    window.location.href = "https://search.daum.net/search?w=news&q=서울숲트리마제";
+  };
+
+  if (loading) {
+    return <div className="card-body">뉴스를 불러오는 중...</div>;
+  }
+
+  if (error) {
+    return <div className="card-body text-danger">오류: {error}</div>;
+  }
 
   return (
     <div className="card">
       <div className="card-header d-flex justify-content-between align-items-center">
-        <h3 className="h5 mb-0">뉴스</h3>
-        <button className="btn btn-link text-purple p-0">더보기 &gt;</button>
+        <h3 className="h5 mb-0">News</h3>
+        <button className="btn text-purple p-0" onClick={handleMoreClick}>
+          더보기 &gt;
+        </button>
       </div>
       <div className="card-body">
-        {newsItems.map((item, index) => (
-          <div key={index} className="d-flex gap-3 mb-3">
-            <div className="bg-light rounded" style={{width: '64px', height: '64px'}}></div>
-            <div>
-              <h4 className="h6 fw-medium">{item.title}</h4>
-              <p className="small text-muted mb-1">{item.content}</p>
-              <p className="small text-muted">{item.date}</p>
+        {newsItems.length > 0 ? (
+          newsItems.map((item, index) => (
+            <div key={index} className="d-flex gap-3 mb-3">
+              <div
+                className="bg-light rounded"
+                style={{
+                  marginTop: "15px",
+                  width: "150px",
+                  height: "80px",
+                  backgroundImage: `url(${item.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              ></div>
+              <div>
+                <h4 className="h6 fw-medium">{item.title}</h4>
+                <p className="small text-muted mb-1">{item.content}</p>
+                <a
+                  href={item.link}
+                  className="small text-muted"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  원문 보기
+                </a>
+                <p className="small text-muted">{item.date}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-muted">관련 뉴스 기사가 없습니다.</p>
+        )}
       </div>
     </div>
   );
 }
 
 export default NewsSection;
-
