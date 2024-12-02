@@ -143,7 +143,7 @@ export default function PropertyDetail() {
   // 건물이름과 주소를 전달하는 함수
   const handleApply = () => {
     if (buildingData && buildingData['건물정보']) {
-      const buildingName = buildingData['건물정보']['건물이름'];
+      const buildingName = buildingData['건물정보']['건물명'];
       const address = buildingData['건물정보']['주소'];
 
       // 데이터와 함께 새로운 경로로 이동

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Navbar, Form, Dropdown, Button } from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
-import custom_header from './header.module.css';
+import custom_header from './Header.module.css';
 import { useNavigate } from 'react-router-dom';
 
 const Header = ({
