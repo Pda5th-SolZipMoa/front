@@ -32,30 +32,30 @@ export const PropertyContents = ({ formData, setFormData }) => {
           },
         }
       );
-  
+
       if (!response.ok) {
         console.error('API 호출 실패:', await response.json());
         return;
       }
-  
+
       const data = await response.json();
       if (data.documents && data.documents.length > 0) {
         const { x, y, address: addr } = data.documents[0];
-  
+
         // 빌딩 코드 규칙에 따라 생성
         const b_code = addr?.b_code || '0000000000'; // 10자리 기본값
         const main_address_no = addr?.main_address_no || ''; // 주 번지
         const sub_address_no = addr?.sub_address_no || ''; // 부 번지
-  
+
         // 4자리 숫자로 맞추기
         const main_address_no_padded = main_address_no.padStart(4, '0'); // 빈 경우 '0000'
         const sub_address_no_padded = sub_address_no.padStart(4, '0'); // 빈 경우 '0000'
-  
+
         // 최종 building_code 생성
         const building_code = `${b_code}0${main_address_no_padded}${sub_address_no_padded}`;
-  
+
         console.log('위도:', y, '경도:', x, 'building_code:', building_code);
-  
+
         // 상태 업데이트
         setFormData((prev) => ({
           ...prev,
@@ -115,6 +115,15 @@ export const PropertyContents = ({ formData, setFormData }) => {
         readOnly // 텍스트 필드 직접 입력 방지
       />
 
+      <PropertyInput
+        label="층수"
+        placeholder="층수를 입력하세요"
+        value={formData.detail_floor}
+        onChange={(e) =>
+          setFormData({ ...formData, detail_floor: e.target.value })
+        }
+      />
+
       <Row>
         <Col>
           <PropertyInput
@@ -155,18 +164,7 @@ export const PropertyContents = ({ formData, setFormData }) => {
             suffix="만원"
           />
         </Col>
-        <Col>
-          <PropertyInput
-            label="유통 가능 물량"
-            type="number"
-            placeholder="30"
-            value={formData.availableTokens}
-            onChange={(e) =>
-              setFormData({ ...formData, availableTokens: e.target.value })
-            }
-            suffix="개"
-          />
-        </Col>
+        <Col></Col>
       </Row>
     </div>
   );

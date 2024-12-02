@@ -4,6 +4,9 @@ import { PropertyContents } from './FormContents';
 import { PropertyPhoto } from './FormPhoto';
 import { PropertyDocs } from './FormDocs';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { ethers } from 'ethers';
+import myToken from '../../hooks/myToken.json';
+const contractAddress = import.meta.env.VITE_APP_CONTRACT_ADDRESS;
 
 const PropertyCreate = () => {
   const [images, setImages] = useState([]); // 초기값 수정
@@ -23,7 +26,46 @@ const PropertyCreate = () => {
     lng: '',
     legalDocs: '',
     legalNotice: false,
+    detail_floor: '',
   });
+
+  const getProvider = async () => {
+    if (!window.ethereum) {
+      alert('MetaMask가 설치되어 있지 않습니다.');
+      return null;
+    }
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    return provider;
+  };
+
+  const mintToken = async () => {
+    const { token_supply, building_code, detail_floor } = formData;
+    console.log(token_supply, building_code, detail_floor);
+
+    try {
+      const provider = await getProvider();
+      if (!provider) return;
+
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddress,
+        myToken.abi,
+        signer
+      );
+
+      const tx = await contract.mintToken(
+        parseInt(token_supply, 10),
+        building_code,
+        parseInt(detail_floor, 10)
+      );
+      await tx.wait();
+      alert('토큰 발행 성공!');
+    } catch (error) {
+      console.error('토큰 발행 중 오류:', error);
+      alert(`오류 발생: ${error.message}`);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,6 +84,7 @@ const PropertyCreate = () => {
       'lng',
       'legalDocs',
       'legalNotice',
+      'detail_floor',
     ];
 
     for (const key of requiredFields) {
@@ -68,11 +111,12 @@ const PropertyCreate = () => {
     // 서버로 데이터 전송
     try {
       const response = await fetch('http://127.0.0.1:8000/api/apartments/token', {
-        method: 'POST',
-        body: data,
+          method: 'POST',
+          body: data,
       });
 
       const result = await response.json();
+      await mintToken();
 
       if (response.ok) {
         alert('토큰 발행 성공!');
