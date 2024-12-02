@@ -1,27 +1,32 @@
-// DetailBox.jsx
-import { Button } from 'react-bootstrap'
-import { ChevronDown } from 'lucide-react'
+import React from 'react';
+import { Button } from 'react-bootstrap';
+import { ChevronDown } from 'lucide-react';
 
-export default function DetailBox({ buildingData }) {
+export default function DetailBox({ buildingData, selectedDetail }) {
   if (!buildingData) {
-    return <div>로딩 중...</div>
+    return <div>로딩 중...</div>;
   }
 
   // 필요한 데이터 추출
-  const buildingInfo = buildingData['건물정보']
-  const latestTransactions = buildingData['최신거래']
+  const buildingInfo = buildingData['건물정보'];
+  const buildingName = buildingInfo['건물명'] || '건물명 없음';
 
-  // 실제 데이터에서 건물명 가져오기
-  const buildingName = buildingInfo['건물명'] || '건물명 없음'
+  // 제목 생성
+  let title = buildingName;
+  if (selectedDetail) {
+    title += ` - ${selectedDetail['집 평수']}평/${selectedDetail['층수']}층`;
+  } else {
+    title += ' - 매물 정보 없음';
+  }
 
-  // 다른 데이터들도 실제 데이터에서 가져올 수 있는지 확인
-  const publicOfferingAmount = buildingInfo['공모금액'] || '데이터 없음' // 백엔드에서 추가 필요
-  const subscriptionPeriod = buildingInfo['청약기간'] || '데이터 없음'   // 백엔드에서 추가 필요
-  const remainingPrice = buildingInfo['잔여가'] || '데이터 없음'        // 백엔드에서 추가 필요
+  // 실제 데이터에서 필요한 정보 가져오기
+  const publicOfferingAmount = buildingInfo['공모금액'] || '데이터 없음'; // 필요에 따라 백엔드에서 추가
+  const subscriptionPeriod = buildingInfo['청약기간'] || '데이터 없음';   // 필요에 따라 백엔드에서 추가
+  const remainingPrice = buildingInfo['잔여가'] || '데이터 없음';        // 필요에 따라 백엔드에서 추가
 
   return (
     <div className="bg-white p-4 rounded shadow-sm">
-      <h5 className="mb-3">{buildingName}</h5>
+      <h5 className="mb-3">{title}</h5>
       <div className="bg-success-subtle p-2 rounded mb-3">
         <small className="text-success">~ 한 좌대 6% 배당률 예상</small>
       </div>
@@ -46,5 +51,5 @@ export default function DetailBox({ buildingData }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
