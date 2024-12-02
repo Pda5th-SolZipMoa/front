@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useTradeContext } from './TradeContext';
@@ -9,6 +9,41 @@ export default function TradeOrderForm({ type }) {
   const [quantity, setQuantity] = useState(''); // 주문 수량 상태
   const [showModal, setShowModal] = useState(false); // 모달 표시 상태
   const [modalMessage, setModalMessage] = useState(''); // 모달에 표시할 메시지 상태
+  const [totalBalance, setTotalBalance] = useState(0); // 보유 금액 상태
+  const [orderableBalance, setOrderableBalance] = useState(0); // 주문 가능 금액 상태
+  const [tradeableTokens, setTradeableTokens] = useState(0); // 거래 가능 토큰 상태
+  const [quantityTokens, setQuantityTokens] = useState(0); // 보유 토큰 수량
+
+  // 주문 가능 금액 및 거래 가능 토큰 API 호출
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (type === 'buy') {
+          // 매수 시 주문 가능 금액 가져오기
+          const response = await axios.get('/api/users/buy-order-balance', {
+            withCredentials: true, // JWT 토큰 사용
+          });
+          setOrderableBalance(response.data.orderable_balance);
+          setTotalBalance(response.data.total_balance);
+        } else {
+          // 매도 시 거래 가능 토큰 가져오기
+          const response = await axios.get(
+            `/api/users/sell-order-balance/${propertyId}`,
+            { withCredentials: true } // JWT 토큰 사용
+          );
+          setTradeableTokens(response.data.tradeable_tokens);
+          setQuantityTokens(response.data.quantity);
+        }
+      } catch (err) {
+        console.error(
+          '데이터 가져오기 실패:',
+          err.response?.data?.detail || err.message
+        );
+      }
+    };
+
+    fetchData();
+  }, [type, propertyId]);
 
   // 버튼 스타일 및 텍스트를 매수/매도에 따라 동적으로 설정
   const buttonColor = type === 'buy' ? 'danger' : 'primary';
@@ -71,11 +106,17 @@ export default function TradeOrderForm({ type }) {
         {/* 사용자 잔액 및 이용 가능량 표시 */}
         <div className="d-flex justify-content-between mb-3">
           <span>{type === 'buy' ? '원화잔액' : '토큰잔액'}</span>
-          <span>0 {type === 'buy' ? '원' : '개'}</span>
+          <span>
+            {type === 'buy' ? `${totalBalance} 원` : `${quantityTokens} 개`}
+          </span>
         </div>
         <div className="d-flex justify-content-between mb-3">
           <span>이용가능</span>
-          <span>0 {type === 'buy' ? '원' : '개'}</span>
+          <span>
+            {type === 'buy'
+              ? `${orderableBalance} 원`
+              : `${tradeableTokens} 개`}
+          </span>
         </div>
         {/* 매수/매도 버튼 */}
         <Button type="submit" variant={buttonColor} className="w-100">
