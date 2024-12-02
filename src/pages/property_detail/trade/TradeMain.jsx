@@ -5,6 +5,7 @@ import { TradeProvider } from './TradeContext';
 import TradeGraph from './TradeGraph';
 import TradeBoard from './TradeBoard';
 import './trade_style.css';
+import Header from '../../../components/header/Header';
 
 export default function TradeMain() {
   const { id } = useParams(); // 건물id
@@ -12,13 +13,7 @@ export default function TradeMain() {
   return (
     <TradeProvider id={id}>
       <div className="bg-light min-vh-100">
-        <Navbar bg="white" className="border-bottom mb-3">
-          <Container>
-            <Navbar.Brand href="#" className="d-flex align-items-center">
-              <div className="text-purple me-2">SOL집모아</div>
-            </Navbar.Brand>
-          </Container>
-        </Navbar>
+        <Header></Header>
 
         <Container>
           <Row>

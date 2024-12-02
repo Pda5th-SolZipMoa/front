@@ -13,20 +13,27 @@ export default function TradeBoard() {
   const websocketRef = useRef(null); // WebSocket 참조
 
   // 호가 데이터를 정렬 함수
-  const sortOrderBook = (orderBook) => ({
-    buy: Object.entries(orderBook.buy || {}).flatMap(([price, orders]) =>
-      orders.map((order) => ({
-        price: parseFloat(price),
-        quantity: order.quantity,
-      }))
-    ),
-    sell: Object.entries(orderBook.sell || {}).flatMap(([price, orders]) =>
-      orders.map((order) => ({
-        price: parseFloat(price),
-        quantity: order.quantity,
-      }))
-    ),
-  });
+  const sortOrderBook = (orderBook) => {
+    const buyOrders = Object.entries(orderBook.buy || {})
+      .flatMap(([price, orders]) =>
+        orders.map((order) => ({
+          price: parseFloat(price),
+          quantity: order.quantity,
+        }))
+      )
+      .sort((a, b) => b.price - a.price); // 매수는 높은 가격 순으로 정렬
+
+    const sellOrders = Object.entries(orderBook.sell || {})
+      .flatMap(([price, orders]) =>
+        orders.map((order) => ({
+          price: parseFloat(price),
+          quantity: order.quantity,
+        }))
+      )
+      .sort((a, b) => a.price - b.price); // 매도는 낮은 가격 순으로 정렬
+
+    return { buy: buyOrders, sell: sellOrders };
+  };
 
   // 초기 REST API를 통해 호가 데이터를 가져오기
   useEffect(() => {
@@ -51,7 +58,7 @@ export default function TradeBoard() {
       websocketRef.current.close();
     }
 
-    const ws = new WebSocket(`ws://localhost:8000/api/ws/orders/${propertyId}`);
+    const ws = new WebSocket(`/api/ws/orders/${propertyId}`);
     websocketRef.current = ws;
 
     ws.onopen = () => {
