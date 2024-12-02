@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
 
 export const PropertyInput = ({
   label,
@@ -13,18 +13,27 @@ export const PropertyInput = ({
 }) => {
   return (
     <Form.Group className="mb-3">
-      <Form.Label>{label}</Form.Label>
-      <div className="d-flex">
+      <Form.Label className="fw-medium">{label}</Form.Label>
+      <InputGroup>
         <Form.Control
           type={type}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          onClick={onClick} // 클릭 이벤트 전달
-          readOnly={readOnly} // 읽기 전용 여부
+          onClick={onClick}
+          readOnly={readOnly}
+          style={{
+            cursor: readOnly ? 'pointer' : 'text',
+            backgroundColor: readOnly ? '#f8f9fa' : '#fff',
+          }}
         />
-        {suffix && <span className="input-group-text">{suffix}</span>}
-      </div>
+        {suffix && (
+          <InputGroup.Text style={{ backgroundColor: '#f8f9fa', color: '#6c757d' }}>
+            {suffix}
+          </InputGroup.Text>
+        )}
+      </InputGroup>
     </Form.Group>
   );
 };
+

@@ -7,6 +7,7 @@ import DetailCategory from './DetailCategory';
 import Header from '../../../components/header/Header';
 import axios from 'axios';
 
+
 export default function PropertyDetail() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [thumbnails, setThumbnails] = useState([]);
@@ -55,6 +56,7 @@ export default function PropertyDetail() {
           if (propertyDetails && propertyDetails.length > 0) {
             const firstDetail = propertyDetails[0];
             try {
+              // 이미지 데이터 가져오기
               const imageResponse = await axios.get(`/api/property-detail-images/${firstDetail.id}`);
               if (imageResponse.status === 200) {
                 const images = imageResponse.data['이미지URL'];
@@ -67,8 +69,8 @@ export default function PropertyDetail() {
                 console.error('이미지 데이터를 가져오는데 실패했습니다.');
                 setSelectedDetail(firstDetail);
               }
-            } catch (imageError) {
-              console.error('이미지 데이터를 가져오는 중 오류가 발생했습니다.', imageError);
+            } catch (error) {
+              console.error('이미지 데이터를 가져오는 중 오류가 발생했습니다.', error);
               setSelectedDetail(firstDetail);
             }
           }
@@ -84,13 +86,14 @@ export default function PropertyDetail() {
     
     fetchBuildingData();
   }, [id]);
-
+  
   // 매물 선택 핸들러
   const handleSelectDetail = async (detail) => {
     try {
-      const response = await axios.get(`/api/property-detail-images/${detail.id}`);
-      if (response.status === 200) {
-        const images = response.data['이미지URL'];
+      // 이미지 데이터 가져오기
+      const imageResponse = await axios.get(`/api/property-detail-images/${detail.id}`);
+      if (imageResponse.status === 200) {
+        const images = imageResponse.data['이미지URL'];
         const detailWithImages = {
           ...detail,
           '이미지URL': images,
