@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Row, Col, Image } from 'react-bootstrap';
+import { useState, useEffect,useNa } from 'react';
+import { useParams,useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Image,Button } from 'react-bootstrap';
 import ScheduleButton from './ScheduleButton';
 import DetailBox from './DetailBox';
 import DetailCategory from './DetailCategory';
@@ -16,6 +16,9 @@ export default function PropertyDetail() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+
+  const navigate = useNavigate(); // useNavigate 훅 추가
+
 
   // 추가된 상태
   const [selectedDetail, setSelectedDetail] = useState(null);
@@ -109,6 +112,8 @@ export default function PropertyDetail() {
     }
     setShowModal(true);
   };
+  
+  
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -135,6 +140,25 @@ export default function PropertyDetail() {
     return <div>에러 발생: {error}</div>;
   }
 
+  // 건물이름과 주소를 전달하는 함수
+  const handleApply = () => {
+    if (buildingData && buildingData['건물정보']) {
+      const buildingName = buildingData['건물정보']['건물이름'];
+      const address = buildingData['건물정보']['주소'];
+
+      // 데이터와 함께 새로운 경로로 이동
+      navigate('/property_sidedetail', {
+        state: {
+          buildingName,
+          address,
+        },
+      });
+    } else {
+      console.error('건물 정보를 찾을 수 없습니다.');
+    }
+  };
+
+  
   return (
     <div style={{ backgroundColor: '#FAF8FF', minHeight: '100vh' }}>
       {/* Header 추가 */}
@@ -181,7 +205,13 @@ export default function PropertyDetail() {
           {/* Right Column - Details */}
           <Col md={5}>
             <DetailBox buildingData={buildingData} selectedDetail={selectedDetail} />
+            <Button className="w-10 mb-3" style={{ backgroundColor: '#6B21A8', borderColor: '#6B21A8' }}
+              onClick={handleApply} // 클릭 핸들러 연결
+            >
+              청약하기
+            </Button>
           </Col>
+
         </Row>
 
         <DetailCategory

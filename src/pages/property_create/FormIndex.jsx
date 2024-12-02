@@ -4,6 +4,8 @@ import { PropertyContents } from './FormContents';
 import { PropertyDetails } from './FormDetails';
 import { PropertyPhoto } from './FormPhoto';
 import { PropertyDocs } from './FormDocs';
+import Header from '../../components/header/Header';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PropertyCreate = () => {
@@ -93,12 +95,18 @@ const PropertyCreate = () => {
   };
 
   return (
+    
     <div style={{ 
       backgroundColor: '#f8f0ff',
       minHeight: '100vh',
       paddingTop: '2rem',
       paddingBottom: '2rem'
     }}>
+      {/* Header 추가 */}
+      <Header
+      />
+
+      
       <Container style={{ maxWidth: '800px' }}>
         <Card className="shadow-sm">
           <Card.Body className="p-5">

@@ -142,13 +142,6 @@ export default function DetailCategory({
         </Modal>
       )}
 
-      {/* 토큰 발행정보 */}
-      <div className="mt-5 p-4" style={{ backgroundColor: 'white', borderRadius: '8px' }}>
-        <p className="common-title">토큰 발행정보</p>
-        <div className="common-line"></div>
-        {/* 여기에 토큰 발행정보를 채워주세요 */}
-      </div>
-
       {/* 건물 정보 */}
       <div className="mt-5 p-4" style={{ backgroundColor: 'white', borderRadius: '8px' }}>
         <p className="common-title">건물 정보</p>
