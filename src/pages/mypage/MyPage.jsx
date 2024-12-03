@@ -14,7 +14,7 @@ export default function MyPage() {
 
   return (
     <OwnershipProvider>
-      <div className="my-page bg-light min-vh-100">
+      <div className="my-page min-vh-100">
         <Header />
         <Container className="py-4">
           <Nav
