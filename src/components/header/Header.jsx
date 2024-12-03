@@ -25,6 +25,8 @@ const Header = ({
     setPlaceholder(result.name); // Placeholder 업데이트
   };
 
+  const navigate = useNavigate();
+
   return (
     <Navbar bg="white" expand="lg" className="border-bottom">
       <Container className={`d-flex flex-wrap ${custom_header.container}`}>
@@ -105,7 +107,14 @@ const Header = ({
               alt="마이페이지 아이콘"
               style={{ width: '30px', height: '28px' }}
             />
-            <span className="ms-2">마이페이지</span>
+            <span
+              className="ms-2"
+              onClick={() => {
+                navigate('/mypage');
+              }}
+            >
+              마이페이지
+            </span>
           </Button>
           <Button
             onClick={() => {
