@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Container, Navbar, Form, Dropdown, Button } from 'react-bootstrap';
+import {
+  Container,
+  Navbar,
+  Form,
+  Dropdown,
+  Button,
+  Tooltip,
+  OverlayTrigger,
+} from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
 import custom_header from './Header.module.css';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +30,7 @@ const Header = ({
       name: result.name,
     });
     setSearchQuery('');
-    setPlaceholder(result.name); // Placeholder 업데이트
+    setPlaceholder(result.name);
   };
 
   const navigate = useNavigate();
@@ -35,15 +43,21 @@ const Header = ({
             src="/main_logo.png"
             alt="SOL집모아 로고"
             className={custom_header.header}
-            style={{ width: '40px', height: '40px' }}
+            onClick={() => {
+              navigate('/main');
+            }}
+            style={{ width: '40px', height: '40px', cursor: 'pointer' }}
           />
           <Navbar.Brand
-            href="#home"
             className="ms-2"
+            onClick={() => {
+              navigate('/main');
+            }}
             style={{
               color: '#6f42c1',
               fontWeight: 'bold',
               fontSize: '1.2rem',
+              cursor: 'pointer',
             }}
           >
             SOL집모아
@@ -65,7 +79,7 @@ const Header = ({
               placeholder={placeholder}
               value={searchQuery}
               onChange={handleSearchChange}
-              style={{ paddingLeft: '30px' }}
+              style={{ paddingLeft: '30px', borderRadius: '25px' }}
             />
             {searchQuery && searchResults.length > 0 && (
               <Dropdown.Menu
@@ -85,44 +99,39 @@ const Header = ({
           </div>
         </Form>
         <div className="d-flex align-items-center justify-content-end flex-grow-1">
-          <Button
-            variant="link"
-            className="d-flex align-items-center me-3 p-0"
-            aria-label="마이페이지로 이동"
+          {/* 마이페이지 아이콘 */}
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip>마이페이지</Tooltip>}
           >
             <img
-              src="/header_myicon.png"
+              src="/mypage_icon.png"
               alt="마이페이지 아이콘"
-              style={{ width: '30px', height: '28px' }}
-            />
-            <span
-              className="ms-2"
               onClick={() => {
                 navigate('/mypage');
               }}
-              style={{
-                textDecoration: 'none',
-                color: '#6f42c1',
-                cursor: 'pointer',
-              }}
-            >
-              마이페이지
-            </span>
-          </Button>
-          <Button
-            onClick={() => {
-              navigate('/property_create');
-            }}
-            style={{
-              backgroundColor: '#6f42c1',
-              color: 'white',
-              fontSize: '0.9rem',
-              padding: '0.5rem 1rem',
-            }}
-            aria-label="토큰 발행하기"
+              style={{ width: '40px', height: '40px', cursor: 'pointer' }}
+            />
+          </OverlayTrigger>
+          {/* 토큰 발행 아이콘 */}
+          <OverlayTrigger
+            placement="bottom"
+            overlay={<Tooltip>토큰 발행</Tooltip>}
           >
-            토큰 발행
-          </Button>
+            <img
+              src="/coin_logo.png"
+              alt="토큰 발행 아이콘"
+              onClick={() => {
+                navigate('/property_create');
+              }}
+              style={{
+                width: '38px',
+                height: '38px',
+                cursor: 'pointer',
+                marginLeft: '15px',
+              }}
+            />
+          </OverlayTrigger>
         </div>
       </Container>
     </Navbar>
