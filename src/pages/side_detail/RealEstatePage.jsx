@@ -4,7 +4,7 @@ import GPTSummary from './GPTSummary';
 import ChatGPT from './ChatGPT';
 import InvestmentInfo from './InvestmentInfo';
 import NearbySolHomes from './NearbySolHomes';
-import Discussion from './Discussion';
+
 
 function RealEstatePage() {
   return (
@@ -22,7 +22,7 @@ function RealEstatePage() {
                 <PropertyDetail />
                 <GPTSummary />
                 <ChatGPT />
-                {/* <Discussion /> */}
+               
             </div>
            
             
