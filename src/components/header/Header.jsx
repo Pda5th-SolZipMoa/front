@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Navbar, Form, Dropdown, Button } from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
-import custom_header from './header.module.css';
+import custom_header from './Header.module.css';
 import { useNavigate } from 'react-router-dom';
 
 const Header = ({
@@ -24,6 +24,8 @@ const Header = ({
     setSearchQuery('');
     setPlaceholder(result.name); // Placeholder 업데이트
   };
+
+  const navigate = useNavigate();
 
   return (
     <Navbar bg="white" expand="lg" className="border-bottom">
@@ -105,7 +107,14 @@ const Header = ({
               alt="마이페이지 아이콘"
               style={{ width: '30px', height: '28px' }}
             />
-            <span className="ms-2">마이페이지</span>
+            <span
+              className="ms-2"
+              onClick={() => {
+                navigate('/mypage');
+              }}
+            >
+              마이페이지
+            </span>
           </Button>
           <Button
             onClick={() => {
