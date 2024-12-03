@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import { useLocation } from 'react-router-dom';
 
 function ChatGPT() {
-  const [messages, setMessages] = useState([]); 
-  const [name, setName] = useState("빌딩 이름");
+  const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+  const { buildingData } = location.state || {};
 
   const fetchChatGPTResponses = async () => {
     setIsLoading(true);
     try {
       const questions = [
-        `건물 정보에 대해 150자 내외로 알려주세요. 건물명: ${name}`,
-        `해당 건물의 투자 정보에 대해 150자 내외로 설명해주세요. 건물명: ${name}`,
-        `이 건물에 대한 향후 투자 전략을 200자 내외로 제안해주세요. 건물명: ${name}`
+        `건물 정보에 대해 150자 내외로 알려주세요. 건물명: ${buildingData['건물정보']['건물명']}`,
+        `해당 건물의 투자 정보에 대해 150자 내외로 설명해주세요. 건물명: ${buildingData['건물정보']['건물명']}`,
+        `이 건물에 대한 향후 투자 전략을 200자 내외로 제안해주세요. 건물명: ${buildingData['건물정보']['건물명']}`
       ];
 
       const responses = await Promise.all(
@@ -48,24 +49,14 @@ function ChatGPT() {
   };
 
   useEffect(() => {
-    const fetchNameFromDB = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/api/properties');
-        setName(response.data.name);
-      } catch (error) {
-        console.error("DB 호출 오류:", error);
-        setName("알 수 없음");
-      }
-    };
-
-    fetchNameFromDB().then(() => fetchChatGPTResponses());
+    fetchChatGPTResponses();
   }, []);
 
   const LoadingSpinner = () => (
     <svg width="24" height="24" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#666">
       <g fill="none" fillRule="evenodd">
         <g transform="translate(1 1)" strokeWidth="2">
-          <circle strokeOpacity=".5" cx="18" cy="18" r="18"/>
+          <circle strokeOpacity=".5" cx="18" cy="18" r="18" />
           <path d="M36 18c0-9.94-8.06-18-18-18">
             <animateTransform
               attributeName="transform"
@@ -73,7 +64,8 @@ function ChatGPT() {
               from="0 18 18"
               to="360 18 18"
               dur="1s"
-              repeatCount="indefinite"/>
+              repeatCount="indefinite"
+            />
           </path>
         </g>
       </g>
@@ -100,16 +92,18 @@ function ChatGPT() {
                 }}
               >
                 <LoadingSpinner />
-                <p className="mb-0 ml-3" style={{ marginLeft: '12px' }}>건물 정보, 투자 정보, 향후 투자 전략 생성중...</p>
+                <p className="mb-0 ml-3" style={{ marginLeft: '12px' }}>
+                  건물 정보, 투자 정보, 향후 투자 전략 생성중...
+                </p>
               </div>
             </div>
           ) : (
             messages.map((message, index) => (
               <div key={index} className="mb-4">
                 <div className="d-flex" style={{ width: '100%', marginBottom: '10px' }}>
-                  <h5 
-                    className="text-primary" 
-                    style={{ 
+                  <h5
+                    className="text-primary"
+                    style={{
                       width: '120px',
                       margin: '0',
                       whiteSpace: 'nowrap',
@@ -144,4 +138,3 @@ function ChatGPT() {
 }
 
 export default ChatGPT;
-

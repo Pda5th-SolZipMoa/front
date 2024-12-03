@@ -22,8 +22,9 @@ function RealEstatePage() {
                 <PropertyDetail />
                 <GPTSummary />
                 <ChatGPT />
-                <Discussion />
+                {/* <Discussion /> */}
             </div>
+           
             
             {/* 오른쪽 영역 */}
             <div className="col-lg-4">
@@ -36,11 +37,11 @@ function RealEstatePage() {
       {/* <div className="container py-4">
         <ChatGPT />
       </div> */}
-      <footer className="bg-white mt-5">
-        <div className="container py-3">
-          <p className="text-center text-muted small">© 2024 부동산 정보 서비스. All rights reserved.</p>
-        </div>
-      </footer>
+      {/* <footer className="bg-white mt-5"> */}
+        {/* <div className="container py-3"> */}
+          {/* <p className="text-center text-muted small">© 2024 부동산 정보 서비스. All rights reserved.</p> */}
+        {/* </div> */}
+      {/* </footer> */}
     </div>
   );
 }
