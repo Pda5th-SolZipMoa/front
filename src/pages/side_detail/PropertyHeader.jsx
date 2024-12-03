@@ -8,7 +8,8 @@ function PropertyHeader({ name, address,code }) {
           <div>
             <h2 className="h3 fw-bold">{name}</h2>
             <p className="text-bold large">{address}</p>
-            <p className="text-muted small">{code || '해당 코드 정보가 없습니다'}</p>
+            <p className="text-muted small"> 건물 번호: {code || '해당 코드 정보가 없습니다'}</p>
+
           </div>
           <div className="text-end">
           </div>
