@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Card, ProgressBar } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // useNavigate import 추가
 import { PropertyContents } from './FormContents';
 import { PropertyDetails } from './FormDetails';
 import { PropertyPhoto } from './FormPhoto';
@@ -72,6 +73,9 @@ const PropertyCreate = () => {
       if (response.ok) {
         alert('토큰 발행 성공!');
         console.log('Response:', result);
+        navigate(`/property_detail/${result.property_id}`, {
+          state: { propertyData: result },
+      });
       } else {
         alert(`오류 발생: ${result.detail}`);
         console.error('Error:', result);
@@ -106,7 +110,7 @@ const PropertyCreate = () => {
       <Header
       />
 
-      
+
       <Container style={{ maxWidth: '800px' }}>
         <Card className="shadow-sm">
           <Card.Body className="p-5">

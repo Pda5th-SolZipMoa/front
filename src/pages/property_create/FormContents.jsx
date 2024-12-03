@@ -81,7 +81,7 @@ export const PropertyContents = ({ formData, setFormData }) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
-        alert('이미 등록된 건물입니다. 기존 이미지가 삭제되고 업로드가 비활성화됩니다.');
+        // alert('이미 등록된 건물입니다. 기존 이미지가 삭제되고 업로드가 비활성화됩니다.');
       }
     } catch (error) {
       console.error('빌딩 코드 확인 에러:', error);
