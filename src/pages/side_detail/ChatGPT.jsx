@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import logo from "/side_detail_gpt.png";
 
+
 function ChatGPT() {
   const [messages, setMessages] = useState([
     {

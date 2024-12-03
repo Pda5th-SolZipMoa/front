@@ -4,24 +4,22 @@ import PriceHistory from './PriceHistory';
 import NewsSection from './NewsSection';
 import InvestmentInfo from './InvestmentInfo';
 import NearbySolHomes from './NearbySolHomes';
+import { useLocation } from 'react-router-dom';
 
 function PropertyDetail() {
+  const location = useLocation();
+  const { buildingData } = location.state || {};  
   return (
     <div className="row g-4">
       <div>
         <PropertyHeader 
-          name="서울숲 트리마제"
-          address="서울특별시 성동구 왕십리로 16"
-          price={53000}
-          priceChange={9.47}
+          name={buildingData['건물정보']['건물명']}
+          address={buildingData['건물정보']['주소']}
+          code={buildingData['건물정보']['빌딩코드']}
         />
-        <PriceHistory />
+        {/* <PriceHistory /> */}
         <NewsSection />
       </div>
-      {/* <div className="col-lg-4">
-        <InvestmentInfo />
-        <NearbySolHomes />
-      </div> */}
     </div>
   );
 }
