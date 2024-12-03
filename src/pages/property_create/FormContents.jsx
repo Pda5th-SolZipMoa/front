@@ -45,13 +45,14 @@ export const PropertyContents = ({ formData, setFormData }) => {
       const data = await response.json();
       if (data.documents && data.documents.length > 0) {
         const { x, y, address: addr } = data.documents[0];
+        console.log(addr)        
         const b_code = addr?.b_code || '0000000000';
         const main_address_no = addr?.main_address_no || '';
         const sub_address_no = addr?.sub_address_no || '';
         const main_address_no_padded = main_address_no.padStart(4, '0');
         const sub_address_no_padded = sub_address_no.padStart(4, '0');
         const building_code = `${b_code}0${main_address_no_padded}${sub_address_no_padded}`;
-
+        console.log(building_code)
         setFormData((prev) => ({
           ...prev,
           lat: y,
@@ -83,7 +84,7 @@ export const PropertyContents = ({ formData, setFormData }) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
-        alert('이미 등록된 건물입니다. 기존 이미지가 삭제되고 업로드가 비활성화됩니다.');
+        // alert('이미 등록된 건물입니다. 기존 이미지가 삭제되고 업로드가 비활성화됩니다.');
       }
     } catch (error) {
       console.error('빌딩 코드 확인 에러:', error);
