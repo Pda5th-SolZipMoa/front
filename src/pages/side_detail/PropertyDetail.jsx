@@ -1,6 +1,5 @@
 import React from 'react';
-import PropertyHeader from './PropertyHeader';
-import PriceHistory from './PriceHistory';
+import PropertyHeader from './PropertyHeader';// import PriceHistory from './PriceHistory';
 import NewsSection from './NewsSection';
 import InvestmentInfo from './InvestmentInfo';
 import NearbySolHomes from './NearbySolHomes';
