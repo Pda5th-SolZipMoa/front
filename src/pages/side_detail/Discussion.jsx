@@ -10,6 +10,7 @@ function Discussion({ roomId }) {
   const [currentUser] = useState("사용자");
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  
   const socket = React.useRef(null);
 
   useEffect(() => {
@@ -59,6 +60,25 @@ function Discussion({ roomId }) {
       );
     } catch (error) {
       console.error("Failed to toggle like", error);
+    }
+  };
+
+  const toggleLike = async (commentId) => {
+    try {
+      await axios.patch(`${API_BASE_URL}/comments/${commentId}`);
+      setComments((prev) =>
+        prev.map((c) =>
+          c.id === commentId
+            ? {
+                ...c,
+                isLiked: !c.isLiked,
+                likes: c.isLiked ? c.likes - 1 : c.likes + 1,
+              }
+            : c
+        )
+      );
+    } catch (error) {
+      console.error('Failed to toggle like', error);
     }
   };
 
