@@ -65,7 +65,7 @@ export const Main = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#FAF8FF', minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh' }}>
       <Header
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
