@@ -47,7 +47,7 @@ export default function PropertyDetail() {
               imageUrls = [imageUrls];
             }
             
-            const fullImageUrls = imageUrls.map((url) => `http://localhost:8000/${url}`);
+            const fullImageUrls = imageUrls.map((url) => `http://3.37.185.91:8000/${url}`);
             setSelectedImage(fullImageUrls[0]);
             setThumbnails(fullImageUrls);
           } else {
