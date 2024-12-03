@@ -36,7 +36,6 @@ node_modules
 # Hardhat files
 /cache
 /artifacts
-src/hooks/myToken.json
 
 # TypeChain files
 /typechain
