@@ -174,17 +174,10 @@ const PropertyCreate = () => {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: '#f8f0ff',
-        minHeight: '100vh',
-        paddingTop: '2rem',
-        paddingBottom: '2rem',
-      }}
-    >
+    <div>
       <Header />
 
-      <Container style={{ maxWidth: '800px' }}>
+      <Container className="py-4" style={{ maxWidth: '800px' }}>
         <Card className="shadow-sm">
           <Card.Body className="p-5">
             <h2
