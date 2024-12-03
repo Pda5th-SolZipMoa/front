@@ -14,34 +14,37 @@ function ChatGPT() {
       const questions = [
         `건물 정보에 대해 150자 내외로 알려주세요. 건물명: ${buildingData['건물정보']['건물명']}`,
         `해당 건물의 투자 정보에 대해 150자 내외로 설명해주세요. 건물명: ${buildingData['건물정보']['건물명']}`,
-        `이 건물에 대한 향후 투자 전략을 200자 내외로 제안해주세요. 건물명: ${buildingData['건물정보']['건물명']}`
+        `이 건물에 대한 향후 투자 전략을 200자 내외로 제안해주세요. 건물명: ${buildingData['건물정보']['건물명']}`,
       ];
 
       const responses = await Promise.all(
         questions.map((question) =>
-          axios.post('http://localhost:8000/api/chat', { user_message: question })
+          axios.post('/api/chat', { user_message: question })
         )
       );
 
       const botMessages = responses.map((response, index) => {
-        const categories = ["건물 정보", "투자 정보", "향후 투자 전략"];
+        const categories = ['건물 정보', '투자 정보', '향후 투자 전략'];
         return {
           type: 'bot',
           content: {
             category: categories[index],
-            text: response.data.bot_reply
-          }
+            text: response.data.bot_reply,
+          },
         };
       });
 
       setMessages(botMessages);
     } catch (error) {
-      console.error("ChatGPT API 호출 오류:", error);
+      console.error('ChatGPT API 호출 오류:', error);
       setMessages([
         {
           type: 'bot',
-          content: { category: "오류", text: "오류가 발생했습니다. 다시 시도해주세요." }
-        }
+          content: {
+            category: '오류',
+            text: '오류가 발생했습니다. 다시 시도해주세요.',
+          },
+        },
       ]);
     } finally {
       setIsLoading(false);
@@ -53,7 +56,13 @@ function ChatGPT() {
   }, []);
 
   const LoadingSpinner = () => (
-    <svg width="24" height="24" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#666">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 38 38"
+      xmlns="http://www.w3.org/2000/svg"
+      stroke="#666"
+    >
       <g fill="none" fillRule="evenodd">
         <g transform="translate(1 1)" strokeWidth="2">
           <circle strokeOpacity=".5" cx="18" cy="18" r="18" />
@@ -88,7 +97,7 @@ function ChatGPT() {
                   color: '#666666',
                   maxWidth: '100%',
                   margin: '10px 0',
-                  fontSize: '0.9rem'
+                  fontSize: '0.9rem',
                 }}
               >
                 <LoadingSpinner />
@@ -100,7 +109,10 @@ function ChatGPT() {
           ) : (
             messages.map((message, index) => (
               <div key={index} className="mb-4">
-                <div className="d-flex" style={{ width: '100%', marginBottom: '10px' }}>
+                <div
+                  className="d-flex"
+                  style={{ width: '100%', marginBottom: '10px' }}
+                >
                   <h5
                     className="text-primary"
                     style={{
@@ -108,7 +120,7 @@ function ChatGPT() {
                       margin: '0',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
-                      textOverflow: 'ellipsis'
+                      textOverflow: 'ellipsis',
                     }}
                   >
                     {message.content.category}
@@ -122,7 +134,7 @@ function ChatGPT() {
                       color: '#000000',
                       wordWrap: 'break-word',
                       width: '100%',
-                      minHeight: '100px'
+                      minHeight: '100px',
                     }}
                   >
                     <p className="mb-0">{message.content.text}</p>

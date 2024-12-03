@@ -1,6 +1,6 @@
-import axios from "axios";
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 function NewsSection() {
   const [newsItems, setNewsItems] = useState([]);
@@ -16,8 +16,8 @@ function NewsSection() {
     // FastAPI 백엔드에서 데이터 가져오기
     const fetchNews = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/news", {
-          params: { query: buildingName || "default" }, // buildingName을 쿼리로 사용
+        const response = await axios.get('/api/news', {
+          params: { query: buildingName || 'default' }, // buildingName을 쿼리로 사용
         });
         setNewsItems(response.data); // 데이터 상태에 저장
       } catch (err) {
@@ -32,7 +32,7 @@ function NewsSection() {
 
   const handleMoreClick = () => {
     // "더보기" 버튼 클릭 시 다음 뉴스 검색 URL로 이동
-    const searchQuery = buildingName || "default"; // 검색어 기본값 설정
+    const searchQuery = buildingName || 'default'; // 검색어 기본값 설정
     window.location.href = `https://search.daum.net/search?w=news&q=${encodeURIComponent(
       searchQuery
     )}`;
@@ -40,7 +40,13 @@ function NewsSection() {
 
   // 로딩 스피너 컴포넌트
   const LoadingSpinner = () => (
-    <svg width="24" height="24" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#666">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 38 38"
+      xmlns="http://www.w3.org/2000/svg"
+      stroke="#666"
+    >
       <g fill="none" fillRule="evenodd">
         <g transform="translate(1 1)" strokeWidth="2">
           <circle strokeOpacity=".5" cx="18" cy="18" r="18" />
@@ -73,7 +79,7 @@ function NewsSection() {
               color: '#666666',
               maxWidth: '100%',
               margin: '10px 0',
-              fontSize: '0.9rem'
+              fontSize: '0.9rem',
             }}
           >
             <LoadingSpinner />
@@ -105,12 +111,12 @@ function NewsSection() {
               <div
                 className="bg-light rounded"
                 style={{
-                  marginTop: "15px",
-                  width: "150px",
-                  height: "80px",
+                  marginTop: '15px',
+                  width: '150px',
+                  height: '80px',
                   backgroundImage: `url(${item.image})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
                 }}
               ></div>
               <div>
