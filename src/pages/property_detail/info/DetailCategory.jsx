@@ -43,7 +43,7 @@ export default function DetailCategory({
       window.kakao.maps.load(() => {
         const container = document.getElementById('map');
         const options = {
-          center: new window.kakao.maps.LatLng(37.5665, 126.9780), // 기본값은 서울 시청
+          center: new window.kakao.maps.LatLng(37.5665, 126.978), // 기본값은 서울 시청
           level: 3,
         };
         const mapInstance = new window.kakao.maps.Map(container, options);
@@ -86,13 +86,20 @@ export default function DetailCategory({
   return (
     <>
       {/* 매물 리스트 */}
-      <div className="mt-5 p-4" style={{ backgroundColor: 'white', borderRadius: '8px' }}>
+      <div
+        className="mt-5 p-4"
+        style={{ backgroundColor: 'white', borderRadius: '8px' }}
+      >
         <p className="common-title">매물 리스트</p>
         <div className="common-line"></div>
         <ListGroup className="mt-4">
           {propertyDetails && propertyDetails.length > 0 ? (
             propertyDetails.map((detail, idx) => (
-              <ListGroup.Item key={idx} action onClick={() => handleItemClick(detail)}>
+              <ListGroup.Item
+                key={idx}
+                action
+                onClick={() => handleItemClick(detail)}
+              >
                 {buildingName} - {detail['집 평수']}평, {detail['층수']}층
               </ListGroup.Item>
             ))
@@ -107,7 +114,8 @@ export default function DetailCategory({
         <Modal show={showModal} onHide={onCloseModal} size="lg">
           <Modal.Header closeButton>
             <Modal.Title>
-              {buildingName} - {selectedDetail['집 평수']}평/{selectedDetail['층수']}층 상세 정보
+              {buildingName} - {selectedDetail['집 평수']}평/
+              {selectedDetail['층수']}층 상세 정보
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -119,11 +127,12 @@ export default function DetailCategory({
 
             <h5 className="mt-4">이미지</h5>
             <Row>
-              {selectedDetail['이미지URL'] && selectedDetail['이미지URL'].length > 0 ? (
+              {selectedDetail['이미지URL'] &&
+              selectedDetail['이미지URL'].length > 0 ? (
                 selectedDetail['이미지URL'].map((url, idx) => (
                   <Col key={idx} md={4} className="mb-3">
                     <img
-                      src={`http://localhost:8000/${url}`}
+                      src={`http://3.37.185.91:8000/${url}`}
                       alt={`이미지 ${idx + 1}`}
                       style={{ width: '100%', borderRadius: '8px' }}
                     />
@@ -143,7 +152,10 @@ export default function DetailCategory({
       )}
 
       {/* 건물 정보 */}
-      <div className="mt-5 p-4" style={{ backgroundColor: 'white', borderRadius: '8px' }}>
+      <div
+        className="mt-5 p-4"
+        style={{ backgroundColor: 'white', borderRadius: '8px' }}
+      >
         <p className="common-title">건물 정보</p>
         <div className="common-line"></div>
         <Row className="mt-4">
@@ -199,7 +211,10 @@ export default function DetailCategory({
       </div>
 
       {/* 시세 정보 */}
-      <div className="mt-5 p-4" style={{ backgroundColor: 'white', borderRadius: '8px' }}>
+      <div
+        className="mt-5 p-4"
+        style={{ backgroundColor: 'white', borderRadius: '8px' }}
+      >
         <p className="common-title">시세 정보</p>
         <div className="common-line"></div>
         <div className="mt-4">
