@@ -88,18 +88,6 @@ const Header = ({
           <Button
             variant="link"
             className="d-flex align-items-center me-3 p-0"
-            aria-label="알림 보기"
-          >
-            <img
-              src="/header_bell.png"
-              alt="알림 아이콘"
-              style={{ width: '28px', height: '28px' }}
-            />
-            <span className="ms-2">알림</span>
-          </Button>
-          <Button
-            variant="link"
-            className="d-flex align-items-center me-3 p-0"
             aria-label="마이페이지로 이동"
           >
             <img
@@ -111,6 +99,11 @@ const Header = ({
               className="ms-2"
               onClick={() => {
                 navigate('/mypage');
+              }}
+              style={{
+                textDecoration: 'none',
+                color: '#6f42c1',
+                cursor: 'pointer',
               }}
             >
               마이페이지

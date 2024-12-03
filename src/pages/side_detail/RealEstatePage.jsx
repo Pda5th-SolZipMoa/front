@@ -4,39 +4,33 @@ import GPTSummary from './GPTSummary';
 import ChatGPT from './ChatGPT';
 import InvestmentInfo from './InvestmentInfo';
 import NearbySolHomes from './NearbySolHomes';
-
+import Header from '../../components/header/Header';
 
 function RealEstatePage() {
   return (
-    <div className="min-vh-100 bg-light">
-      <header className="bg-white shadow-sm">
-        <div className="container py-4">
-          <h1 className="h2 fw-semibold text-dark">부동산 상세 정보</h1>
-        </div>
-      </header>
+    <div className="min-vh-100" style={{ backgroundColor: 'rgb(250, 248, 255)' }}>
+      {/* 공통 Header 추가 */}
+      <Header />
       <main>
-      <div className="container py-4">
-        <div className="row">
+        <div className="container py-4">
+          <div className="row">
             {/* 왼쪽 영역 */}
             <div className="col-lg-8">
-                <PropertyDetail />
-                <GPTSummary />
-                <ChatGPT />
-               
+              <PropertyDetail />
+              <GPTSummary />
+              <ChatGPT />
             </div>
-           
-            
+
             {/* 오른쪽 영역 */}
             <div className="col-lg-4">
-                <InvestmentInfo />
-                <NearbySolHomes />
+              <InvestmentInfo />
+              <NearbySolHomes />
             </div>
+          </div>
         </div>
-    </div>
       </main>
     </div>
   );
 }
 
 export default RealEstatePage;
-
