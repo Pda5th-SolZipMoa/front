@@ -4,7 +4,7 @@ import GPTSummary from './GPTSummary';
 import ChatGPT from './ChatGPT';
 import InvestmentInfo from './InvestmentInfo';
 import NearbySolHomes from './NearbySolHomes';
-import Discussion from './Discussion';
+
 
 function RealEstatePage() {
   return (
@@ -22,8 +22,9 @@ function RealEstatePage() {
                 <PropertyDetail />
                 <GPTSummary />
                 <ChatGPT />
-                <Discussion />
+               
             </div>
+           
             
             {/* 오른쪽 영역 */}
             <div className="col-lg-4">
@@ -33,14 +34,6 @@ function RealEstatePage() {
         </div>
     </div>
       </main>
-      {/* <div className="container py-4">
-        <ChatGPT />
-      </div> */}
-      <footer className="bg-white mt-5">
-        <div className="container py-3">
-          <p className="text-center text-muted small">© 2024 부동산 정보 서비스. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 }

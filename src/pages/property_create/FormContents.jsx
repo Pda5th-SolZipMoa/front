@@ -13,7 +13,8 @@ export const PropertyContents = ({ formData, setFormData }) => {
     if (!document.getElementById('kakao-postcode-script')) {
       const script = document.createElement('script');
       script.id = 'kakao-postcode-script';
-      script.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+      script.src =
+        'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
       script.async = true;
       document.body.appendChild(script);
     }
@@ -26,7 +27,9 @@ export const PropertyContents = ({ formData, setFormData }) => {
   const fetchCoordinates = async (address) => {
     try {
       const response = await fetch(
-        `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`,
+        `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(
+          address
+        )}`,
         {
           headers: {
             Authorization: `KakaoAK ${VITE_KAKAO_MAP_KEY_RESTAPI}`,
