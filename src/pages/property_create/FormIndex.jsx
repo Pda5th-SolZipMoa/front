@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Container, Form, Button } from 'react-bootstrap';
+import { Container, Form, Button, Card, ProgressBar } from 'react-bootstrap';
 import { PropertyContents } from './FormContents';
-import { PropertyPhoto } from './FormPhoto'; // 상세 매물 이미지 컴포넌트 유지
+import { PropertyDetails } from './FormDetails';
+import { PropertyPhoto } from './FormPhoto';
 import { PropertyDocs } from './FormDocs';
+import Header from '../../components/header/Header';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ethers } from 'ethers';
 import myToken from '../../hooks/myToken.json';
@@ -10,11 +13,12 @@ import myToken from '../../hooks/myToken.json';
 const contractAddress = import.meta.env.VITE_APP_CONTRACT_ADDRESS;
 
 const PropertyCreate = () => {
+  const [currentPage, setCurrentPage] = useState(1);
   const [images, setImages] = useState([]);
+  
   const [formData, setFormData] = useState({
     name: '',
     address: '',
-    token_supply: '',
     created_at: '',
     price: '',
     owner_id: '',
@@ -32,6 +36,9 @@ const PropertyCreate = () => {
     home_size: '',
     room_cnt: '',
     maintenance_cost: '',
+    token_supply:'',
+    token_cost:'',
+    period:'',
   });
 
   const getProvider = async () => {
@@ -74,7 +81,6 @@ const PropertyCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       // 토큰 발행 및 ID 반환
       const tokenId = await mintToken();
@@ -97,6 +103,14 @@ const PropertyCreate = () => {
         'room_cnt',
         'maintenance_cost',
       ];
+
+    for (const key of requiredFields) {
+      if (key === 'legalNotice') {
+        data.append(key, formData[key] ? 'true' : 'false');
+      } else if (formData[key]) {
+        data.append(key, formData[key]);
+      }
+    }
 
       for (const key of requiredFields) {
         if (key === 'legalNotice') {
@@ -134,42 +148,122 @@ const PropertyCreate = () => {
     }
   };
 
-  return (
-    <Container
-      className="py-5"
-      style={{ maxWidth: '800px', backgroundColor: '#f8f9ff' }}
-    >
-      <h2 className="mb-4">부동산 토큰 발행</h2>
+  const nextPage = () => {
+    if (currentPage < 3) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
-      <Form onSubmit={handleSubmit}>
-        <PropertyContents formData={formData} setFormData={setFormData} />
-        <PropertyPhoto images={images} setImages={setImages} />
-        <PropertyDocs formData={formData} setFormData={setFormData} />
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
-        <Form.Group className="mb-4">
-          <Form.Check
-            type="checkbox"
-            label="이용약관에 동의합니다"
-            checked={formData.legalNotice}
-            onChange={(e) =>
-              setFormData({ ...formData, legalNotice: e.target.checked })
-            }
-          />
-        </Form.Group>
+  return (  
+    <div style={{ 
+      backgroundColor: '#f8f0ff',
+      minHeight: '100vh',
+      paddingTop: '2rem',
+      paddingBottom: '2rem'
+    }}>
+      {/* Header 추가 */}
+      <Header
+      />
 
-        <div className="d-grid">
-          <Button
-            variant="primary"
-            type="submit"
-            size="lg"
-            disabled={!formData.legalNotice}
-            style={{ backgroundColor: '#7950f2', borderColor: '#7950f2' }}
-          >
-            토큰 발행 신청하기
-          </Button>
-        </div>
-      </Form>
-    </Container>
+      <Container style={{ maxWidth: '800px' }}>
+        <Card className="shadow-sm">
+          <Card.Body className="p-5">
+            <h2 className="text-center mb-4" style={{ color: '#5a287d', fontWeight: '600' }}>
+              부동산 토큰 발행
+            </h2>
+            
+            <ProgressBar 
+              now={(currentPage / 3) * 100} 
+              className="mb-4"
+              variant="info"
+            />
+
+            <Form onSubmit={handleSubmit} className="mx-auto" style={{ maxWidth: '700px' }}>
+              {currentPage === 1 && (
+                <PropertyContents
+                  formData={formData}
+                  setFormData={setFormData}
+                  // setHasBuildingInfo={setHasBuildingInfo}
+                />
+              )}
+              {currentPage === 2 && (
+                <>
+                  <PropertyDetails
+                    formData={formData}
+                    setFormData={setFormData}
+                  />
+                  <PropertyPhoto images={images} setImages={setImages} />
+                </>
+              )}
+              {currentPage === 3 && (
+                <>
+                  <PropertyDocs formData={formData} setFormData={setFormData} />
+                  <Form.Group className="mb-4">
+                    <div className="d-flex align-items-center gap-2">
+                      <Form.Check
+                        type="checkbox"
+                        id="legalNotice"
+                        checked={formData.legalNotice}
+                        onChange={(e) =>
+                          setFormData({ ...formData, legalNotice: e.target.checked })
+                        }
+                      />
+                      <Form.Label htmlFor="legalNotice" className="mb-0" style={{ color: '#495057' }}>
+                        이용약관에 동의합니다
+                      </Form.Label>
+                    </div>
+                  </Form.Group>
+                </>
+              )}
+
+              <div className="d-flex justify-content-between mt-5">
+                {currentPage > 1 && (
+                  <Button
+                    variant="secondary"
+                    onClick={prevPage}
+                    className="px-4 py-2"
+                  >
+                    이전
+                  </Button>
+                )}
+                {currentPage < 3 ? (
+                  <Button
+                    variant="primary"
+                    onClick={nextPage}
+                    className="px-4 py-2 ms-auto"
+                    style={{
+                      backgroundColor: '#7950f2',
+                      borderColor: '#7950f2',
+                    }}
+                  >
+                    다음
+                  </Button>
+                ) : (
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    className="px-4 py-2 ms-auto"
+                    disabled={!formData.legalNotice}
+                    style={{
+                      backgroundColor: '#7950f2',
+                      borderColor: '#7950f2',
+                    }}
+                  >
+                    토큰 발행 신청하기
+                  </Button>
+                )}
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Container>
+    </div>
   );
 };
 

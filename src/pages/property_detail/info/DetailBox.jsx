@@ -155,6 +155,7 @@ export default function DetailBox({ buildingData, selectedDetail }) {
 
   // Close modal
   const handleCloseModal = () => setShowModal(false);
+
   if (!buildingData || !selectedDetail) {
     return <div>로딩 중...</div>;
   }
@@ -165,10 +166,11 @@ export default function DetailBox({ buildingData, selectedDetail }) {
   // 제목 생성
   const title = `${buildingName} - ${selectedDetail['집 평수']}평/${selectedDetail['층수']}층`;
 
+
   // 필요한 데이터 추출
   const tokenSupply = selectedDetail['토큰발행'] || 0;
   const tokenCost = selectedDetail['토큰가격'] || 0;
-  const publicOfferingAmount = tokenSupply * tokenCost || '데이터 없음';
+  const publicOfferingAmount = (tokenSupply * tokenCost) || '데이터 없음';
   const subscriptionPeriod = selectedDetail['청약기간'] || '데이터 없음';
   const remainingPrice = buildingData['건물정보']['잔여가'] || '데이터 없음'; // 필요에 따라 수정
 

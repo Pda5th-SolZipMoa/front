@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Heart, HeartFill, Trash } from 'react-bootstrap-icons';
+import React, { useState, useEffect } from "react";
+import { io } from "socket.io-client";
+import axios from "axios";
+import { Heart, HeartFill, Trash } from "react-bootstrap-icons";
 
-const API_BASE_URL = 'http://localhost:8000/api/discussion';
-const SOCKET_URL = 'http://localhost:8000';
+const API_BASE_URL = "http://localhost:8000/api/discussion";
+const SOCKET_URL = "http://localhost:8000";
 
 function Discussion({ roomId }) {
-  const [currentUser] = useState('사용자');
+  const [currentUser] = useState("사용자");
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState("");
+  
   const socket = React.useRef(null);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ function Discussion({ roomId }) {
         const response = await axios.get(`${API_BASE_URL}/comments/${roomId}`);
         setComments(response.data);
       } catch (error) {
-        console.error('Failed to fetch comments', error);
+        console.error("Failed to fetch comments", error);
       }
     };
 
@@ -28,7 +30,7 @@ function Discussion({ roomId }) {
     socket.current = io(SOCKET_URL, { query: { room: roomId } });
 
     // WebSocket 메시지 수신
-    socket.current.on('message', (newComment) => {
+    socket.current.on("message", (newComment) => {
       setComments((prev) => [...prev, newComment]);
     });
 
@@ -40,10 +42,25 @@ function Discussion({ roomId }) {
   }, [roomId]);
 
   const addComment = () => {
-    if (newComment.trim() === '') return;
+    if (newComment.trim() === "") return;
     const comment = { author: currentUser, content: newComment };
-    socket.current.emit('message', comment); // WebSocket으로 전송
-    setNewComment('');
+    socket.current.emit("message", comment); // WebSocket으로 전송
+    setNewComment("");
+  };
+
+  const toggleLike = async (commentId) => {
+    try {
+      await axios.patch(`${API_BASE_URL}/comments/${commentId}`);
+      setComments((prev) =>
+        prev.map((c) =>
+          c.id === commentId
+            ? { ...c, isLiked: !c.isLiked, likes: c.isLiked ? c.likes - 1 : c.likes + 1 }
+            : c
+        )
+      );
+    } catch (error) {
+      console.error("Failed to toggle like", error);
+    }
   };
 
   const toggleLike = async (commentId) => {
@@ -72,14 +89,8 @@ function Discussion({ roomId }) {
       </div>
       <div className="card-body">
         {comments.map((comment) => (
-          <div
-            key={comment.id}
-            className="d-flex gap-3 mb-3 p-3 bg-light rounded"
-          >
-            <div
-              className="bg-dark rounded"
-              style={{ width: '48px', height: '48px', flexShrink: 0 }}
-            />
+          <div key={comment.id} className="d-flex gap-3 mb-3 p-3 bg-light rounded">
+            <div className="bg-dark rounded" style={{ width: "48px", height: "48px", flexShrink: 0 }} />
             <div className="flex-grow-1 d-flex justify-content-between align-items-start">
               <div>{comment.content}</div>
               <div className="d-flex align-items-center">
@@ -102,9 +113,7 @@ function Discussion({ roomId }) {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
           />
-          <button onClick={addComment} className="btn btn-primary mt-2">
-            Send
-          </button>
+          <button onClick={addComment} className="btn btn-primary mt-2">Send</button>
         </div>
       </div>
     </div>
