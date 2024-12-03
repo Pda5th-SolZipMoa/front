@@ -8,7 +8,7 @@ import Header from '../../components/header/Header';
 
 function RealEstatePage() {
   return (
-    <div className="min-vh-100" style={{ backgroundColor: 'rgb(250, 248, 255)' }}>
+    <div className="min-vh-100">
       {/* 공통 Header 추가 */}
       <Header />
       <main>

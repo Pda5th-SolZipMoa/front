@@ -17,10 +17,13 @@ function InvestmentInfo() {
   return (
     <div className="card shadow-sm mb-4">
       <div className="card-body">
-        <h5 className="fw-bold mb-4">최근 거래된 매물</h5>
+        <h5 className="fw-bold mb-4">매물 목록</h5>
         {listings.length > 0 ? (
           <div className="table-responsive">
-            <Table className="table-bordered text-center rounded-3 shadow-sm" style={{ overflow: 'hidden' }}>
+            <Table
+              className="table-bordered text-center rounded-3 shadow-sm"
+              style={{ overflow: 'hidden' }}
+            >
               <thead className="bg-light text-dark">
                 <tr>
                   <th>층수</th>
