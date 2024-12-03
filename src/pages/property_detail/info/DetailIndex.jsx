@@ -73,8 +73,6 @@ export default function PropertyDetail() {
     return <div>에러 발생: {error}</div>;
   }
 
-<<<<<<< Updated upstream
-=======
   // 건물이름과 주소를 전달하는 함수
   const handleApply = () => {
     if (buildingData && buildingData['건물정보']) {
@@ -93,7 +91,6 @@ export default function PropertyDetail() {
   };
 
   
->>>>>>> Stashed changes
   return (
     <div style={{ backgroundColor: '#FAF8FF', minHeight: '100vh' }}>
       {/* Header 추가 */}
