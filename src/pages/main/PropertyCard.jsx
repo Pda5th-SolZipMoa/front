@@ -123,7 +123,7 @@ const PropertyCard = ({
               handleRoute(id);
             }}
           >
-            상세 페이지로 이동 {`>`}
+            투자 상세 페이지로 이동 {`>`}
           </Button>
         </div>
       </Card.Body>

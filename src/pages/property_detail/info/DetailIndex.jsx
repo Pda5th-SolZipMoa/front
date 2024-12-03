@@ -1,5 +1,5 @@
-import { useState, useEffect,useNa } from 'react';
-import { useParams,useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams,useNavigate,useLocation } from 'react-router-dom';
 import { Container, Row, Col, Image,Button } from 'react-bootstrap';
 import ScheduleButton from './ScheduleButton';
 import DetailBox from './DetailBox';
@@ -18,6 +18,8 @@ export default function PropertyDetail() {
   const [searchResults, setSearchResults] = useState([]);
 
   const navigate = useNavigate(); // useNavigate 훅 추가
+  const location = useLocation();
+  
 
 
   // 추가된 상태
@@ -45,7 +47,7 @@ export default function PropertyDetail() {
               imageUrls = [imageUrls];
             }
             
-            const fullImageUrls = imageUrls.map((url) => `http://localhost:8000/${url}`);
+            const fullImageUrls = imageUrls.map((url) => `http://3.37.185.91:8000/${url}`);
             setSelectedImage(fullImageUrls[0]);
             setThumbnails(fullImageUrls);
           } else {
@@ -143,14 +145,13 @@ export default function PropertyDetail() {
   // 건물이름과 주소를 전달하는 함수
   const handleApply = () => {
     if (buildingData && buildingData['건물정보']) {
-      const buildingName = buildingData['건물정보']['건물이름'];
-      const address = buildingData['건물정보']['주소'];
-
+      // const buildingName = buildingData['건물정보']['건물명'];
+      // const address = buildingData['건물정보']['주소'];
+      console.log(buildingData)
       // 데이터와 함께 새로운 경로로 이동
       navigate('/property_sidedetail', {
         state: {
-          buildingName,
-          address,
+          buildingData
         },
       });
     } else {

@@ -1,0 +1,29 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main # main 브랜치로 푸시될 때 실행
+
+jobs:
+  deploy:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      # 코드 체크아웃
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # EC2 서버에 코드 배포 및 서비스 재시작
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/frontend
+            git pull
+            sudo docker-compose down
+            sudo docker-compose up --build -d

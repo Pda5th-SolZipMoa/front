@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Card, ProgressBar } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; // useNavigate import 추가
 import { PropertyContents } from './FormContents';
 import { PropertyDetails } from './FormDetails';
 import { PropertyPhoto } from './FormPhoto';
@@ -132,11 +133,15 @@ const PropertyCreate = () => {
         method: 'POST',
         body: data,
       });
-
+      const result = await response.json();
       if (response.ok) {
-        const result = await response.json();
-        alert('토큰 발행 및 데이터 저장 성공!');
-        console.log('서버 응답:', result);
+
+        alert('토큰 발행 성공!');
+        console.log('Response:', result);
+        navigate(`/property_detail/${result.property_id}`, {
+          state: { propertyData: result },
+      });
+
       } else {
         const result = await response.json();
         alert(`오류 발생: ${result.detail}`);
