@@ -12,7 +12,7 @@ export default function TradeMain() {
 
   return (
     <TradeProvider id={id}>
-      <div className="bg-light min-vh-100">
+      <div className="min-vh-100">
         <Header></Header>
 
         <div className="p-4">
