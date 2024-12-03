@@ -6,11 +6,11 @@ import { PropertyDocs } from './FormDocs';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ethers } from 'ethers';
 import myToken from '../../hooks/myToken.json';
+
 const contractAddress = import.meta.env.VITE_APP_CONTRACT_ADDRESS;
 
 const PropertyCreate = () => {
-  const [images, setImages] = useState([]); // 상세 매물 이미지를 관리
-  const [hasBuildingInfo, setHasBuildingInfo] = useState(false); // 빌딩 코드 존재 여부 상태 추가
+  const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -40,17 +40,15 @@ const PropertyCreate = () => {
       return null;
     }
     await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    return provider;
+    return new ethers.BrowserProvider(window.ethereum);
   };
 
   const mintToken = async () => {
-    const { token_supply, building_code, detail_floor } = formData;
-    console.log(token_supply, building_code, detail_floor);
-
     try {
+      const { token_supply, building_code, detail_floor } = formData;
       const provider = await getProvider();
       if (!provider) return;
+      console.log(building_code)
 
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(
@@ -64,85 +62,75 @@ const PropertyCreate = () => {
         building_code,
         parseInt(detail_floor, 10)
       );
-      await tx.wait();
-      alert('토큰 발행 성공!');
+
+      // 트랜잭션 완료 대기
+      const receipt = await tx.wait();
     } catch (error) {
       console.error('토큰 발행 중 오류:', error);
       alert(`오류 발생: ${error.message}`);
+      throw error;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const data = new FormData();
-
-    const requiredFields = [
-      'name',
-      'address',
-      'token_supply',
-      'price',
-      'building_code',
-      'lat',
-      'lng',
-      'property_photo',
-      'legalDocs',
-      'legalNotice',
-      'detail_floor',
-      'home_size',
-      'room_cnt',
-      'maintenance_cost',
-    ];
-
-    for (const key of requiredFields) {
-      if (key === 'legalNotice') {
-        data.append(key, formData[key] ? 'true' : 'false');
-      } else if (formData[key]) {
-        data.append(key, formData[key]);
-      }
-    }
-
-    images.forEach((image) => {
-      if (image) {
-        data.append('images', image);
-      }
-    });
-
     try {
+      // 토큰 발행 및 ID 반환
+      const tokenId = await mintToken();
+
+      // 서버에 데이터 전송
+      const data = new FormData();
+      const requiredFields = [
+        'name',
+        'address',
+        'token_supply',
+        'price',
+        'building_code',
+        'lat',
+        'lng',
+        'property_photo',
+        'legalDocs',
+        'legalNotice',
+        'detail_floor',
+        'home_size',
+        'room_cnt',
+        'maintenance_cost',
+      ];
+
+      for (const key of requiredFields) {
+        if (key === 'legalNotice') {
+          data.append(key, formData[key] ? 'true' : 'false');
+        } else if (formData[key]) {
+          data.append(key, formData[key]);
+        }
+      }
+
+      images.forEach((image) => {
+        if (image) {
+          data.append('images', image);
+        }
+      });
+
+      data.append('token_id', tokenId); // 발행된 토큰 ID 추가
+
       const response = await fetch('/api/apartments/token', {
         method: 'POST',
         body: data,
       });
 
-      const result = await response.json();
-
       if (response.ok) {
-        try {
-          await mintToken();
-          alert('토큰 발행 성공!');
-          console.log('서버 응답:', result);
-        } catch (error) {
-          console.error('토큰 발행 중 오류:', error);
-
-          if (
-            (error.reason && error.reason === 'Token ID already exists') || // Solidity 리턴 오류
-            (error.data &&
-              error.data.message &&
-              error.data.message.includes('Token ID already exists')) || // 내부 데이터 메시지
-            (error.message && error.message.includes('Token ID already exists')) // 일반 오류 메시지
-          ) {
-            alert('이미 존재하는 토큰 ID입니다. 다른 ID를 사용하세요.');
-          } else {
-            alert('토큰 발행 중 알 수 없는 오류가 발생했습니다.');
-          }
-        }
+        const result = await response.json();
+        alert('토큰 발행 및 데이터 저장 성공!');
+        console.log('서버 응답:', result);
       } else {
+        const result = await response.json();
         alert(`오류 발생: ${result.detail}`);
-        console.error('Error:', result);
+        console.error('서버 오류:', result);
       }
     } catch (error) {
-      console.error('서버 통신 에러:', error);
-      alert('서버와의 통신에 문제가 발생했습니다.');
+      console.error('토큰 발행 및 서버 통신 중 오류:', error);
+      alert('오류가 발생했습니다. 다시 시도하세요.');
     }
   };
 
@@ -154,13 +142,7 @@ const PropertyCreate = () => {
       <h2 className="mb-4">부동산 토큰 발행</h2>
 
       <Form onSubmit={handleSubmit}>
-        {/* 메인 건물 정보와 이미지를 입력 */}
-        <PropertyContents
-          formData={formData}
-          setFormData={setFormData}
-          setHasBuildingInfo={setHasBuildingInfo} // 빌딩 코드 존재 여부 상태 전달
-        />
-        {/* 상세 매물 이미지를 입력 */}
+        <PropertyContents formData={formData} setFormData={setFormData} />
         <PropertyPhoto images={images} setImages={setImages} />
         <PropertyDocs formData={formData} setFormData={setFormData} />
 

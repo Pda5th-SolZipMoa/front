@@ -92,7 +92,6 @@ export default function DetailBox({ buildingData, selectedDetail }) {
         totalCostETH.toString(),
         'ether'
       );
-
       const totalCostInKRW = totalCostETH * ethToKrwRate;
 
       setEthCost(totalCostETH);
@@ -100,6 +99,7 @@ export default function DetailBox({ buildingData, selectedDetail }) {
 
       setShowModal(true);
 
+      // 트랜잭션 실행
       const tx = await contract.subscribe(
         building_token_id,
         parseInt(subscriptionAmount, 10),
@@ -110,9 +110,10 @@ export default function DetailBox({ buildingData, selectedDetail }) {
         }
       );
 
-      await tx.wait();
+      await tx.wait(); // 트랜잭션 완료까지 기다림
 
       alert('청약 신청이 성공적으로 완료되었습니다!');
+      setShowModal(false); // 트랜잭션 완료 후 팝업 닫기
     } catch (error) {
       console.error('청약 신청 중 오류:', error);
       alert('청약 신청 중 오류가 발생했습니다.');
@@ -154,12 +155,28 @@ export default function DetailBox({ buildingData, selectedDetail }) {
 
   // Close modal
   const handleCloseModal = () => setShowModal(false);
+  if (!buildingData || !selectedDetail) {
+    return <div>로딩 중...</div>;
+  }
+
+  // 건물명
+  const buildingName = buildingData['건물정보']['건물명'] || '건물명 없음';
+
+  // 제목 생성
+  const title = `${buildingName} - ${selectedDetail['집 평수']}평/${selectedDetail['층수']}층`;
+
+  // 필요한 데이터 추출
+  const tokenSupply = selectedDetail['토큰발행'] || 0;
+  const tokenCost = selectedDetail['토큰가격'] || 0;
+  const publicOfferingAmount = tokenSupply * tokenCost || '데이터 없음';
+  const subscriptionPeriod = selectedDetail['청약기간'] || '데이터 없음';
+  const remainingPrice = buildingData['건물정보']['잔여가'] || '데이터 없음'; // 필요에 따라 수정
 
   return (
     <div className="bg-white p-4 rounded shadow-sm">
       <h5 className="mb-3">{buildingInfo?.['건물명'] || '건물명 없음'}</h5>
       <div className="bg-success-subtle p-2 rounded mb-3">
-        <small className="text-success">~ 한 좌대 6% 배당률 예상</small>
+        <small className="text-success">신한투자증권이 발행함.</small>
       </div>
       <div className="mb-3">
         <div className="mb-3">

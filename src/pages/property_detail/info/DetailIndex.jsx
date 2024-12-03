@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Row, Col, Image } from 'react-bootstrap';
+import { useState, useEffect,useNa } from 'react';
+import { useParams,useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Image,Button } from 'react-bootstrap';
 import ScheduleButton from './ScheduleButton';
 import DetailBox from './DetailBox';
 import DetailCategory from './DetailCategory';
 import Header from '../../../components/header/Header';
 import axios from 'axios';
+
 
 export default function PropertyDetail() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -15,6 +16,9 @@ export default function PropertyDetail() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+
+  const navigate = useNavigate(); // useNavigate 훅 추가
+
 
   // 추가된 상태
   const [selectedDetail, setSelectedDetail] = useState(null);
@@ -55,6 +59,7 @@ export default function PropertyDetail() {
           if (propertyDetails && propertyDetails.length > 0) {
             const firstDetail = propertyDetails[0];
             try {
+              // 이미지 데이터 가져오기
               const imageResponse = await axios.get(`/api/property-detail-images/${firstDetail.id}`);
               if (imageResponse.status === 200) {
                 const images = imageResponse.data['이미지URL'];
@@ -67,8 +72,8 @@ export default function PropertyDetail() {
                 console.error('이미지 데이터를 가져오는데 실패했습니다.');
                 setSelectedDetail(firstDetail);
               }
-            } catch (imageError) {
-              console.error('이미지 데이터를 가져오는 중 오류가 발생했습니다.', imageError);
+            } catch (error) {
+              console.error('이미지 데이터를 가져오는 중 오류가 발생했습니다.', error);
               setSelectedDetail(firstDetail);
             }
           }
@@ -84,13 +89,14 @@ export default function PropertyDetail() {
     
     fetchBuildingData();
   }, [id]);
-
+  
   // 매물 선택 핸들러
   const handleSelectDetail = async (detail) => {
     try {
-      const response = await axios.get(`/api/property-detail-images/${detail.id}`);
-      if (response.status === 200) {
-        const images = response.data['이미지URL'];
+      // 이미지 데이터 가져오기
+      const imageResponse = await axios.get(`/api/property-detail-images/${detail.id}`);
+      if (imageResponse.status === 200) {
+        const images = imageResponse.data['이미지URL'];
         const detailWithImages = {
           ...detail,
           '이미지URL': images,
@@ -106,6 +112,8 @@ export default function PropertyDetail() {
     }
     setShowModal(true);
   };
+  
+  
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -132,6 +140,25 @@ export default function PropertyDetail() {
     return <div>에러 발생: {error}</div>;
   }
 
+  // 건물이름과 주소를 전달하는 함수
+  const handleApply = () => {
+    if (buildingData && buildingData['건물정보']) {
+      const buildingName = buildingData['건물정보']['건물이름'];
+      const address = buildingData['건물정보']['주소'];
+
+      // 데이터와 함께 새로운 경로로 이동
+      navigate('/property_sidedetail', {
+        state: {
+          buildingName,
+          address,
+        },
+      });
+    } else {
+      console.error('건물 정보를 찾을 수 없습니다.');
+    }
+  };
+
+  
   return (
     <div style={{ backgroundColor: '#FAF8FF', minHeight: '100vh' }}>
       {/* Header 추가 */}
@@ -178,7 +205,13 @@ export default function PropertyDetail() {
           {/* Right Column - Details */}
           <Col md={5}>
             <DetailBox buildingData={buildingData} selectedDetail={selectedDetail} />
+            <Button className="w-10 mb-3" style={{ backgroundColor: '#6B21A8', borderColor: '#6B21A8' }}
+              onClick={handleApply} // 클릭 핸들러 연결
+            >
+              청약하기
+            </Button>
           </Col>
+
         </Row>
 
         <DetailCategory
