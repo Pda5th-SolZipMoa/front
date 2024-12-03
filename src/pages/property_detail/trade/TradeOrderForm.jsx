@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useTradeContext } from './TradeContext';
 
 export default function TradeOrderForm({ type }) {
-  const { id: propertyId } = useTradeContext(); // 건물Id를 Context에서 가져옴
+  const { id: propertyId, data } = useTradeContext(); // 건물Id를 Context에서 가져옴
   const [price, setPrice] = useState(''); // 주문 가격 상태
   const [quantity, setQuantity] = useState(''); // 주문 수량 상태
   const [showModal, setShowModal] = useState(false); // 모달 표시 상태
@@ -13,6 +13,17 @@ export default function TradeOrderForm({ type }) {
   const [orderableBalance, setOrderableBalance] = useState(0); // 주문 가능 금액 상태
   const [tradeableTokens, setTradeableTokens] = useState(0); // 거래 가능 토큰 상태
   const [quantityTokens, setQuantityTokens] = useState(0); // 보유 토큰 수량
+
+  const [priceError, setPriceError] = useState(false); // 가격 입력 오류 상태
+  const [quantityError, setQuantityError] = useState(false); // 수량 입력 오류 상태
+
+  // 최신 가격을 초기값으로 설정
+  useEffect(() => {
+    if (data.length > 0) {
+      const latestPrice = data[data.length - 1].price; // 최신 가격 가져오기
+      setPrice(latestPrice);
+    }
+  }, [data]);
 
   // 주문 가능 금액 및 거래 가능 토큰 API 호출
   useEffect(() => {
@@ -45,16 +56,28 @@ export default function TradeOrderForm({ type }) {
     fetchData();
   }, [type, propertyId]);
 
-  // 버튼 스타일 및 텍스트를 매수/매도에 따라 동적으로 설정
-  const buttonColor = type === 'buy' ? 'danger' : 'primary';
-  const buttonText = type === 'buy' ? '매수하기' : '매도하기';
-
   // 모달 닫기 핸들러
   const handleClose = () => setShowModal(false);
 
   // 폼 제출 핸들러 (매수/매도 API 요청)
   const handleSubmit = async (event) => {
     event.preventDefault(); // 폼 기본 동작 방지
+
+    // 유효성 검사
+    const isPriceValid = price && price % 1000 === 0; // 가격이 입력되었는지, 1,000원 단위인지 확인
+    const isQuantityValid = quantity && quantity > 0; // 수량이 입력되었는지, 양수인지 확인
+
+    if (!isPriceValid || !isQuantityValid) {
+      setPriceError(!isPriceValid);
+      setQuantityError(!isQuantityValid);
+      setModalMessage(
+        `주문에 실패했습니다. ${
+          !isPriceValid ? '가격은 1,000원 단위로 입력해주세요.' : ''
+        } ${!isQuantityValid ? '수량은 1 이상이어야 합니다.' : ''}`.trim()
+      );
+      setShowModal(true);
+      return;
+    }
 
     try {
       // API 엔드포인트와 요청 데이터 설정
@@ -85,23 +108,47 @@ export default function TradeOrderForm({ type }) {
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
           <Form.Label>주문가격</Form.Label>
-          {/* 주문 가격 입력 필드 */}
           <Form.Control
             type="number"
-            placeholder="53500"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => {
+              const value = parseInt(e.target.value, 10) || '';
+              setPrice(value);
+              if (value % 1000 === 0) setPriceError(false); // 1,000원 단위면 에러 해제
+            }}
+            onBlur={(e) => {
+              // 입력 종료 시 자동 보정
+              const value = parseInt(e.target.value, 10) || 0;
+              if (value % 1000 !== 0) {
+                setPrice(Math.round(value / 1000) * 1000); // 1,000 단위로 보정
+              }
+            }}
+            className={priceError ? 'is-invalid' : ''}
           />
+          {priceError && (
+            <Form.Text className="text-danger">
+              가격은 1,000원 단위로 입력해주세요.
+            </Form.Text>
+          )}
         </Form.Group>
         <Form.Group className="mb-3">
           <Form.Label>주문수량</Form.Label>
-          {/* 주문 수량 입력 필드 */}
           <Form.Control
             type="number"
             placeholder="0"
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={(e) => {
+              const value = parseInt(e.target.value, 10) || '';
+              setQuantity(value);
+              if (value > 0) setQuantityError(false); // 양수면 에러 해제
+            }}
+            className={quantityError ? 'is-invalid' : ''}
           />
+          {quantityError && (
+            <Form.Text className="text-danger">
+              수량은 1개 이상이어야 합니다.
+            </Form.Text>
+          )}
         </Form.Group>
         {/* 사용자 잔액 및 이용 가능량 표시 */}
         <div className="d-flex justify-content-between mb-3">
@@ -119,8 +166,12 @@ export default function TradeOrderForm({ type }) {
           </span>
         </div>
         {/* 매수/매도 버튼 */}
-        <Button type="submit" variant={buttonColor} className="w-100">
-          {buttonText}
+        <Button
+          type="submit"
+          variant={type === 'buy' ? 'danger' : 'primary'}
+          className="w-100"
+        >
+          {type === 'buy' ? '매수하기' : '매도하기'}
         </Button>
       </Form>
 
