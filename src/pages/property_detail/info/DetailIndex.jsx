@@ -73,6 +73,27 @@ export default function PropertyDetail() {
     return <div>에러 발생: {error}</div>;
   }
 
+<<<<<<< Updated upstream
+=======
+  // 건물이름과 주소를 전달하는 함수
+  const handleApply = () => {
+    if (buildingData && buildingData['건물정보']) {
+      // const buildingName = buildingData['건물정보']['건물명'];
+      // const address = buildingData['건물정보']['주소'];
+      console.log(buildingData)
+      // 데이터와 함께 새로운 경로로 이동
+      navigate('/property_sidedetail', {
+        state: {
+          buildingData
+        },
+      });
+    } else {
+      console.error('건물 정보를 찾을 수 없습니다.');
+    }
+  };
+
+  
+>>>>>>> Stashed changes
   return (
     <div style={{ backgroundColor: '#FAF8FF', minHeight: '100vh' }}>
       {/* Header 추가 */}
