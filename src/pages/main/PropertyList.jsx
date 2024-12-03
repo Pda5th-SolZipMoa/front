@@ -89,8 +89,7 @@ const PropertyList = ({ moveToLocation, data, handleRoute }) => {
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
         >
-          <option>수익률순</option>
-          <option>가격순</option>
+          <option>공모금액순</option>
           <option>최신순</option>
         </Form.Select>
       </div>
@@ -102,8 +101,8 @@ const PropertyList = ({ moveToLocation, data, handleRoute }) => {
             name={property.name}
             image={property.photos[0]?.url}
             price={property.price}
-            tokenPrice={property.token_supply}
-            availableTokens={property.availableTokens}
+            tokenSupply={property.token_supply}
+            tokenPrice={property.token_cost}
             percentage={property.percentage}
             lat={property.lat}
             lng={property.lng}

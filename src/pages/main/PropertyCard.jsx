@@ -100,14 +100,6 @@ const PropertyCard = ({
       <Card.Body style={cardStyles.cardBody}>
         <div style={cardStyles.row}>
           <Card.Title style={cardStyles.title}>{name}</Card.Title>
-          <span
-            style={{
-              ...cardStyles.percentage,
-              color: percentage > 0 ? '#28a745' : '#dc3545',
-            }}
-          >
-            {percentage > 0 ? `+${percentage}` : percentage}%
-          </span>
         </div>
         <Card.Text style={cardStyles.textGroup}>
           <div style={cardStyles.row}>
@@ -116,7 +108,7 @@ const PropertyCard = ({
           </div>
           <div style={cardStyles.row}>
             <span>발행된 토큰 양</span>
-            <span>{tokenSupply}</span>
+            <span>{tokenSupply}개</span>
           </div>
           <div style={cardStyles.row}>
             <span>토큰 당 가격</span>
