@@ -144,7 +144,6 @@ export default function DetailCategory({
         </Row>
       </div>
 
-      {/* 시세 정보 */}
       <div
         className="mt-5 p-4"
         style={{ backgroundColor: 'white', borderRadius: '8px' }}
@@ -163,14 +162,21 @@ export default function DetailCategory({
             </thead>
             <tbody>
               {Array.isArray(latestTransactions) ? (
-                latestTransactions.map((transaction, idx) => (
-                  <tr key={idx} className={idx % 2 === 0 ? 'bg-light' : ''}>
-                    <td>{transaction['계약일자']}</td>
-                    <td>{transaction['거래금액']} 억원</td>
-                    <td>{transaction['전용면적']} m²</td>
-                    <td>{transaction['층']} 층</td>
-                  </tr>
-                ))
+                latestTransactions
+                  // 날짜 기준으로 정렬
+                  .sort((a, b) => {
+                    const dateA = new Date(a['계약일자']);
+                    const dateB = new Date(b['계약일자']);
+                    return dateB - dateA; // 최신 날짜 기준으로 정렬
+                  })
+                  .map((transaction, idx) => (
+                    <tr key={idx} className={idx % 2 === 0 ? 'bg-light' : ''}>
+                      <td>{transaction['계약일자']}</td>
+                      <td>{transaction['거래금액']} 억원</td>
+                      <td>{transaction['전용면적']} m²</td>
+                      <td>{transaction['층']} 층</td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td colSpan="4">최근 거래 내역이 없습니다.</td>

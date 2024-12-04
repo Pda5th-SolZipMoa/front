@@ -128,7 +128,9 @@ const PropertyList = ({ moveToLocation, data, handleRoute, filter }) => {
         <Container fluid className="px-0">
           <Row className="mb-3 align-items-center">
             <Col>
-              <GradientText>주변 SOL집 찾기</GradientText>
+              <GradientText style={{ fontSize: '23px' }}>
+                주변 SOL집 찾기
+              </GradientText>
             </Col>
             <Col className="text-end">
               {/* Sorting Dropdown */}
