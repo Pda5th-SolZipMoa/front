@@ -23,9 +23,9 @@ export default function SubscriptionRecords() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'pending':
-        return <Badge bg="secondary">대기</Badge>; // 회색
+        return <Badge bg="secondary">청약 진행 중</Badge>; // 회색
       case 'fulfilled':
-        return <Badge bg="success">완료</Badge>; // 초록색
+        return <Badge bg="success">배정 완료</Badge>; // 초록색
       case 'cancelled':
         return <Badge bg="danger">취소</Badge>; // 빨간색
       default:
