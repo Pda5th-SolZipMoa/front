@@ -6,13 +6,40 @@ import Map from '../../components/map/Map';
 import PropertyList from './PropertyList';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import styled from 'styled-components';
+
+const MainContainer = styled.div`
+  background-color: #faf8ff;
+  min-height: 100vh;
+`;
+
+const ContentContainer = styled(Container)`
+  padding-top: 2rem;
+  max-width: 1400px;
+`;
+
+const MapColumn = styled(Col)`
+  height: calc(100vh - 120px);
+  @media (max-width: 768px) {
+    height: 50vh;
+  }
+`;
+
+const ListColumn = styled(Col)`
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  @media (max-width: 768px) {
+    height: 50vh;
+  }
+`;
 
 export const Main = () => {
-  const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
-  const [searchResults, setSearchResults] = useState([]); // 검색 결과 상태
-  const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 상태
-  const [buildings, setBuildings] = useState([]); // 빌딩 데이터 상태
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [buildings, setBuildings] = useState([]);
   const navigate = useNavigate();
+  const [filter, setFilter] = useState('전체');
   const [buildingData, setBuildingData] = useState(null);
 
   useEffect(() => {
@@ -34,26 +61,21 @@ export const Main = () => {
 
   const handleRouteButton = async (id) => {
     try {
-      // API 요청하여 빌딩 데이터 가져오기
       const response = await axios.get(
         `/api/building-latest-transactions/${id}`
       );
 
-      // 응답 데이터가 정상적으로 반환되었는지 확인
       if (
         response.status === 200 &&
         response.data &&
         response.data['건물정보'] &&
         response.data['건물정보']['매물목록']
       ) {
-        const buildingData = response.data; // 응답에서 건물정보 추출
-
-        console.log(buildingData); // 건물 정보 출력
-
-        // 데이터와 함께 새로운 경로로 이동
+        const buildingData = response.data;
+        console.log(buildingData);
         navigate('/property_sidedetail', {
           state: {
-            buildingData, // 상태로 건물 데이터 전달
+            buildingData,
           },
         });
       } else {
@@ -65,33 +87,37 @@ export const Main = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <MainContainer>
       <Header
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         searchResults={searchResults}
-        onSelectLocation={setSelectedLocation} // 선택된 위치 전달
+        onSelectLocation={setSelectedLocation}
       />
-      <Container className="mt-4">
+      <ContentContainer>
         <Row>
-          <Col md={8}>
+          <MapColumn lg={8} md={7} sm={12}>
             <Map
               keyword={searchQuery}
               onSearchResults={setSearchResults}
-              selectedLocation={selectedLocation} // 선택된 위치 전달
-              data={buildings} // 빌딩 데이터 전달
+              selectedLocation={selectedLocation}
+              data={buildings}
+              filter={filter}
+              setFilter={setFilter}
             />
-          </Col>
-          <Col md={4}>
+          </MapColumn>
+          <ListColumn lg={4} md={5} sm={12}>
             <PropertyList
-              moveToLocation={moveToLocation} // moveToLocation 전달
+              moveToLocation={moveToLocation}
               data={buildings}
               handleRoute={handleRouteButton}
+              filter={filter}
+              setFilter={setFilter}
             />
-          </Col>
+          </ListColumn>
         </Row>
-      </Container>
-    </div>
+      </ContentContainer>
+    </MainContainer>
   );
 };
 
