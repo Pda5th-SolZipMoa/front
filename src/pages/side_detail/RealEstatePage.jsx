@@ -8,7 +8,7 @@ import Header from '../../components/header/Header';
 
 function RealEstatePage() {
   return (
-    <div className="min-vh-100" style={{ backgroundColor: 'rgb(250, 248, 255)' }}>
+    <div className="min-vh-100" style={{ backgroundColor: 'rgb(256, 256, 256)' }}>
       {/* 공통 Header 추가 */}
       <Header />
       <main>
@@ -18,13 +18,12 @@ function RealEstatePage() {
             <div className="col-lg-8">
               <PropertyDetail />
               <GPTSummary />
-              <ChatGPT />
             </div>
 
             {/* 오른쪽 영역 */}
             <div className="col-lg-4">
               <InvestmentInfo />
-              <NearbySolHomes />
+              <ChatGPT />
             </div>
           </div>
         </div>

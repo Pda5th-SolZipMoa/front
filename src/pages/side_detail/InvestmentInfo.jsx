@@ -1,6 +1,8 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Table, Button } from 'react-bootstrap';
+import { Container, Table, Button, Card } from 'react-bootstrap';
+import { ArrowRight } from 'react-bootstrap-icons';
+import './InvestmentInfo.css';
 
 function InvestmentInfo() {
   const location = useLocation();
@@ -10,51 +12,57 @@ function InvestmentInfo() {
   const listings = buildingData?.['건물정보']['매물목록'] || [];
 
   const handleInvestClick = (id) => {
-    // 해당 ID로 URL 이동
     navigate(`/property/${id}/trade`);
   };
 
   return (
-    <div className="card shadow-sm mb-4">
-      <div className="card-body">
-        <h5 className="fw-bold mb-4">최근 거래된 매물</h5>
-        {listings.length > 0 ? (
-          <div className="table-responsive">
-            <Table className="table-bordered text-center rounded-3 shadow-sm" style={{ overflow: 'hidden' }}>
-              <thead className="bg-light text-dark">
-                <tr>
-                  <th>층수</th>
-                  <th>유지비</th>
-                  <th>집 평수</th>
-                  <th>투자하기</th>
-                </tr>
-              </thead>
-              <tbody>
-                {listings.map((listing, index) => (
-                  <tr key={index}>
-                    <td className="align-middle">{listing['층수']}층</td>
-                    <td className="align-middle">{listing['유지비']}만원</td>
-                    <td className="align-middle">{listing['집 평수']}평</td>
-                    <td className="align-middle">
-                      <Button
-                        variant="purple"
-                        size="sm"
-                        onClick={() => handleInvestClick(listing['id'])}
-                      >
-                        투자하기
-                      </Button>
-                    </td>
+    
+    <Container className="mb-1">
+      <h4 className="card-title h5" style={{color:"#6C63FF !important"}}>최근 거래된 매물</h4>
+      <Card className="investment-card mt-2">
+        {/* <Card.Body> */}
+          <div className="d-flex justify-content-between align-items-center mb-4" />
+
+          {listings.length > 0 ? (
+            <div className="table-responsive">
+              <Table className="table-hover investment-table">
+                <thead>
+                  <tr>
+                    <th>층수</th>
+                    <th>유지비</th>
+                    <th>집 평수</th>
+                    <th>투자하기</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
-        ) : (
-          <p className="text-muted text-center">매물 정보가 없습니다.</p>
-        )}
-      </div>
-    </div>
+                </thead>
+                <tbody>
+                  {listings.map((listing, index) => (
+                    <tr key={index}>
+                      <td>{listing['층수']}층</td>
+                      <td>{listing['유지비']}만원</td>
+                      <td>{listing['집 평수']}평</td>
+                      <td>
+                        <Button
+                          // variant="outline-primary"
+                          size="sm"
+                          className="rounded-pill px-3 custom-button"
+                          onClick={() => handleInvestClick(listing['id'])}
+                        >
+                          투자하기
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          ) : (
+            <p className="text-muted text-center py-5">매물 정보가 없습니다.</p>
+          )}
+        {/* </Card.Body> */}
+      </Card>
+    </Container>
   );
 }
 
 export default InvestmentInfo;
+
