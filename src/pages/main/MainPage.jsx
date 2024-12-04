@@ -16,17 +16,17 @@ export const Main = () => {
   const [buildingData, setBuildingData] = useState(null);
 
   useEffect(() => {
-    const fetchBuildingLists = async () => {
-      try {
-        const response = await axios.get('/api/buildings');
-        setBuildings(response.data);
-      } catch (error) {
-        console.error('Error fetching building data:', error);
-      }
-    };
-
     fetchBuildingLists();
   }, []);
+
+  const fetchBuildingLists = async () => {
+    try {
+      const response = await axios.get('/api/buildings');
+      setBuildings(response.data);
+    } catch (error) {
+      console.error('Error fetching building data:', error);
+    }
+  };
 
   const moveToLocation = (latitude, longitude) => {
     setSelectedLocation({ latitude, longitude });

@@ -12,6 +12,17 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
   const mapMarkerImage = '/map_apt_marker.png'; // 커스텀 마커 이미지
   const searchMarkerImage = '/map_marker.png'; // 검색 마커 이미지
 
+  useEffect(() => {
+    const initializeMap = async () => {
+      // 지도 초기화 완료 확인
+      if (!map || data.length === 0) return;
+
+      // 마커 추가
+      addAllMarkers(data);
+    };
+
+    initializeMap();
+  }, [map, data]);
   // Kakao Maps 스크립트 로드
   useEffect(() => {
     const loadMapScript = () => {
@@ -70,7 +81,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
     const markerImage = new window.kakao.maps.MarkerImage(
       markerImageSrc,
       new window.kakao.maps.Size(40, 40),
-      { offset: new window.kakao.maps.Point(20, 40) },
+      { offset: new window.kakao.maps.Point(20, 40) }
     );
 
     const marker = new window.kakao.maps.Marker({
@@ -144,7 +155,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
 
         const positionLatLng = new window.kakao.maps.LatLng(
           latitude,
-          longitude,
+          longitude
         );
         map.setCenter(positionLatLng);
         map.setLevel(4);
@@ -158,7 +169,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
       (error) => {
         console.error('Error getting current location:', error);
         alert('현재 위치를 가져올 수 없습니다.');
-      },
+      }
     );
   };
 
@@ -174,7 +185,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
       // 지도 중심 이동
       const position = new window.kakao.maps.LatLng(
         selectedLocation.latitude,
-        selectedLocation.longitude,
+        selectedLocation.longitude
       );
       map.setCenter(position);
       map.setLevel(4);
@@ -255,7 +266,7 @@ const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
             }}
             onClick={moveToCurrentLocation}
           >
-           현 위치로 이동
+            현 위치로 이동
           </Button>
         </div>
       )}
