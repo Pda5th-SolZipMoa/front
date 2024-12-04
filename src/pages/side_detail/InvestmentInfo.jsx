@@ -39,10 +39,6 @@ function InvestmentInfo() {
     }
   };
 
-  if (loading) {
-    return <p className="text-center py-5">로딩 중...</p>;
-  }
-
   if (error) {
     return <p className="text-center py-5 text-danger">오류 발생: {error}</p>;
   }
@@ -87,7 +83,11 @@ function InvestmentInfo() {
             </Table>
           </div>
         ) : (
-          <p className="text-muted text-center py-5">매물 정보가 없습니다.</p>
+          <p className="text-muted text-center py-5">
+            {loading
+              ? '매물 정보를 불러오고 있습니다.'
+              : '매물 정보가 없습니다.'}
+          </p>
         )}
       </Card>
     </Container>
