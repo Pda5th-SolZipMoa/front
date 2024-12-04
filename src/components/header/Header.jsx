@@ -43,7 +43,7 @@ const Header = ({
   const navigate = useNavigate();
 
   return (
-    <Navbar bg="white" expand="lg" className="border-bottom">
+    <Navbar bg="white" expand="lg">
       <Container className={`d-flex flex-wrap ${custom_header.container}`}>
         <div className="d-flex align-items-center mb-2 mb-lg-0">
           <img

@@ -9,7 +9,6 @@ import axios from 'axios';
 import styled from 'styled-components';
 
 const MainContainer = styled.div`
-  background-color: #faf8ff;
   min-height: 100vh;
 `;
 
@@ -72,10 +71,10 @@ export const Main = () => {
         response.data['건물정보']['매물목록']
       ) {
         const buildingData = response.data;
-        console.log(buildingData);
         navigate('/property_sidedetail', {
           state: {
             buildingData,
+            id,
           },
         });
       } else {

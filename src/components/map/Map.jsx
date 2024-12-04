@@ -37,6 +37,7 @@ const StyledButton = styled.button`
 `;
 
 const Map = ({ data, filter, setFilter }) => {
+  console.log(filter);
   const [loading, setLoading] = useState(false);
   const [map, setMap] = useState(null);
   const [buildingMarkers, setBuildingMarkers] = useState([]);
@@ -115,7 +116,7 @@ const Map = ({ data, filter, setFilter }) => {
           box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
           margin-bottom: 25px;
         ">
-          <div style="font-weight: bold;">공모 금액</div>
+          <div style="font-weight: bold;">실 거래가</div>
           <div>${(price / 10000).toLocaleString()}억 원</div>
         </div>
       `;
@@ -168,6 +169,7 @@ const Map = ({ data, filter, setFilter }) => {
         </div>
       ) : (
         <div style={{ position: 'relative', height: '100%' }}>
+          {/*
           <MapControls>
             {['전체', '청약', '투자'].map((btnFilter) => (
               <StyledButton
@@ -179,6 +181,7 @@ const Map = ({ data, filter, setFilter }) => {
               </StyledButton>
             ))}
           </MapControls>
+            */}
           <div id="map" style={{ width: '100%', height: '100%' }}></div>
         </div>
       )}
