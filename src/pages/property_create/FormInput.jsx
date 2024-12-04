@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
+import './PropertyInput.css'; // 스타일 파일 임포트
 
 export const PropertyInput = ({
   label,
@@ -12,8 +13,8 @@ export const PropertyInput = ({
   readOnly,
 }) => {
   return (
-    <Form.Group className="mb-3">
-      <Form.Label className="fw-medium">{label}</Form.Label>
+    <Form.Group className="property-input">
+      <Form.Label>{label}</Form.Label>
       <InputGroup>
         <Form.Control
           type={type}
@@ -22,13 +23,9 @@ export const PropertyInput = ({
           onChange={onChange}
           onClick={onClick}
           readOnly={readOnly}
-          style={{
-            cursor: readOnly ? 'pointer' : 'text',
-            backgroundColor: readOnly ? '#f8f9fa' : '#fff',
-          }}
         />
         {suffix && (
-          <InputGroup.Text style={{ backgroundColor: '#f8f9fa', color: '#6c757d' }}>
+          <InputGroup.Text>
             {suffix}
           </InputGroup.Text>
         )}
@@ -36,4 +33,3 @@ export const PropertyInput = ({
     </Form.Group>
   );
 };
-

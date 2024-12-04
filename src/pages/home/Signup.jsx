@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useWallet from '../../hooks/useWallet';
+
 export default function Signup() {
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -64,15 +65,18 @@ export default function Signup() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '100vh',
-        width: '100vw',
-        background: 'linear-gradient(100deg, #F3EDFB 56.38%, #FAE7F7 98.45%)',
+        minHeight: '100vh', // 화면 전체 높이
+        width: '100vw', // 화면 전체 너비
         margin: 0,
         padding: 0,
         overflow: 'hidden',
+        backgroundImage: 'url("/signupimage.jpg")', // 배경 이미지 설정
+        backgroundSize: 'cover', // 배경 이미지 꽉 채우기
+        backgroundPosition: 'center', // 이미지 중앙 정렬
+        backgroundRepeat: 'no-repeat', // 반복 금지
       }}
     >
-      <div className="card shadow-sm" style={{ width: '400px' }}>
+      <div className="card shadow-sm" style={{ width: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
         <div className="card-body p-4">
           <h2 className="text-center mb-4">회원가입</h2>
           <p className="text-muted text-center mb-4">

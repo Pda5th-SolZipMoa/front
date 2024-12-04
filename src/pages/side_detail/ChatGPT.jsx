@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Form, Button } from 'react-bootstrap';
 import { Send } from 'react-bootstrap-icons';
-import logo from "/side_detail_gpt.png";
+// import logo from "/side_detail_gpt.png";
 import "./ChatGPT.css";
 
 
@@ -74,11 +74,11 @@ function ChatGPT() {
             key={index}
             className={`message ${message.type}`}
           >
-            {message.type === 'bot' && (
+            {/* {message.type === 'bot' && (
               <div className="bot-avatar">
                 <img src={logo} alt="Bot" className="logo" />
               </div>
-            )}
+            )} */}
             <div className="message-content">
               <p>{message.content.text}</p>
             </div>

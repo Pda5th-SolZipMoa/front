@@ -133,11 +133,11 @@ export const PropertyContents = ({ formData, setFormData }) => {
   };
 
   return (
-    <Card className="mb-4 border-0 bg-light">
+    <Card className="mb-4 border-0">
       <Card.Body>
         <PropertyInput
           label="건물명"
-          placeholder="건물의 이름을 입력하세요"
+          placeholder="건물명을 입력하세요"
           value={formData.name}
           onChange={(e) =>
             setFormData({ ...formData, name: e.target.value })
@@ -146,7 +146,7 @@ export const PropertyContents = ({ formData, setFormData }) => {
 
         <PropertyInput
           label="주소"
-          placeholder="건물의 정확한 주소를 입력하세요"
+          placeholder="도로명 주소를 입력하세요"
           value={formData.address}
           onClick={handleAddressClick}
           readOnly
@@ -155,7 +155,7 @@ export const PropertyContents = ({ formData, setFormData }) => {
         <PropertyInput
           label="매매 거래가"
           type="number"
-          placeholder="500"
+          placeholder="금액을 입력하세요"
           value={formData.price}
           onChange={(e) =>
             setFormData({ ...formData, price: e.target.value })
@@ -166,32 +166,23 @@ export const PropertyContents = ({ formData, setFormData }) => {
         <PropertyInput
           label="발행수량"
           type="number"
-          placeholder="100"
+          placeholder="발행 수량을 입력하세요"
           value={formData.token_supply}
           onChange={(e) =>
             setFormData({ ...formData, token_supply: e.target.value })
           }
-          suffix="개"
+          suffix="토큰"
         />
 
         <PropertyInput
           label="토큰 당 가격"
           type="number"
-          placeholder="100"
+          placeholder="토큰 당 가격을 입력하세요"
           value={formData.token_cost}
           onChange={(e) =>
             setFormData({ ...formData, token_cost: e.target.value })
           }
           suffix="만원"
-        />
-
-        <PropertyInput
-          label="기간 설정"
-          placeholder="20241130 ~ 20241225"
-          value={formData.period}
-          onChange={(e) =>
-            setFormData({ ...formData, period: e.target.value })
-          }
         />
 
         <div className="mb-3">

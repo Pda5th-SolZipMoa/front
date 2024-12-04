@@ -99,7 +99,7 @@ export default function OrderHistory() {
             ) : (
               <tr>
                 <td colSpan="6" className="text-center">
-                  주문 기록이 없습니다.
+                  주문 기록이 없습니다
                 </td>
               </tr>
             )}

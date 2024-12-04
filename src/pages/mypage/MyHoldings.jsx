@@ -91,7 +91,7 @@ export default function MyHoldings() {
           ) : (
             <Card className="text-center p-5 border-0">
               <Card.Body>
-                <h3 className="text-muted">보유 자산이 없습니다.</h3>
+                <h5 className="text-muted">보유 자산이 없습니다</h5>
               </Card.Body>
             </Card>
           )}
