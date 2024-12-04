@@ -3,41 +3,71 @@ import { Button, Form, ProgressBar, Modal } from 'react-bootstrap';
 import { ethers } from 'ethers';
 import axios from 'axios';
 import myToken from '../../../hooks/myToken.json';
+import { useParams } from 'react-router-dom';
 
 const contractAddress = import.meta.env.VITE_APP_CONTRACT_ADDRESS;
 
 export default function DetailBox({ buildingData, selectedDetail }) {
+  const { id, roomId } = useParams(); // URL의 id와 roomId 추출
+
+  console.log(selectedDetail);
   const [subscriptionAmount, setSubscriptionAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [totalTokens] = useState(
-    parseInt(selectedDetail?.['토큰발행'], 10) || 0
-  );
+  const [totalTokens, setTotalTokens] = useState(0);
+  const [tokenCost, setTokenCost] = useState(0);
   const [remainingTokens, setRemainingTokens] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [ethCost, setEthCost] = useState(0);
   const [krwCost, setKrwCost] = useState(0);
+  const [period, setPeriod] = useState(0);
 
-  console.log(selectedDetail);
-
-  // 전체 청약 토큰 대비 남아 있는 토큰 수 계산
   useEffect(() => {
-    const fetchRemainingTokens = async () => {
-      console.log('실행');
+    // roomId로 해당 room 데이터를 가져오는 함수
+    const fetchTokens = async () => {
       try {
-        const response = await axios.get(
-          `/api/subscriptions/tokens/${selectedDetail?.['id']}`
+        const response = await axios.get(`/api/property/details/${id}`);
+        const rooms = response.data.rooms;
+
+        // roomId에 맞는 객체 찾기
+        const selectedRoom = rooms.find(
+          (room) => room.room_id === parseInt(roomId, 10)
         );
-        setRemainingTokens(totalTokens - response.data.total_quantity);
+
+        if (selectedRoom) {
+          setTotalTokens(parseInt(selectedRoom.token_supply, 10) || 0);
+          setTokenCost(selectedRoom.token_cost);
+          setPeriod(selectedRoom.period);
+        } else {
+          console.warn('해당 roomId에 맞는 방을 찾을 수 없습니다.');
+        }
       } catch (error) {
-        console.error('Error fetching remaining tokens:', error);
+        console.error('Token data fetch error:', error);
+      }
+    };
+
+    fetchTokens();
+  }, [id, roomId]); // id 또는 roomId가 변경될 때 실행
+
+  useEffect(() => {
+    // 남은 토큰 데이터를 가져오는 함수
+    const fetchRemainingTokens = async () => {
+      if (!totalTokens) return; // totalTokens가 설정된 후 실행
+
+      try {
+        const response = await axios.get(`/api/subscriptions/tokens/${roomId}`);
+        const usedTokens = parseInt(response.data.total_quantity, 10) || 0;
+
+        setRemainingTokens(totalTokens - usedTokens); // 남은 토큰 계산
+      } catch (error) {
+        console.error('Remaining token fetch error:', error);
       }
     };
 
     fetchRemainingTokens();
-  }, []);
+  }, [roomId, totalTokens]); // roomId 또는 totalTokens가 변경될 때 실행
 
   console.log(selectedDetail);
-  const pricePerTokenKRW = parseInt(selectedDetail?.['토큰가격'], 10) * 10000;
+  const pricePerTokenKRW = tokenCost * 10000;
   const ethToKrwRate = 5100000; // 1 ETH = 510만원
   const pricePerTokenETH = Math.floor(pricePerTokenKRW / ethToKrwRate);
 
@@ -116,17 +146,15 @@ export default function DetailBox({ buildingData, selectedDetail }) {
     <div className="card border-0 shadow-sm">
       <div className="card-body p-4" style={{ backgroundColor: '#F8F7FF' }}>
         <h4 className="card-title text-center mb-3 fw-bold">{title}</h4>
-        <p className="text-center text-muted small mb-4">
-          청약 기간: {subscriptionStart} ~ {subscriptionEnd}
-        </p>
 
         <ProgressBar
           now={progress}
-          label={`${remainingTokens}/${totalTokens}`}
+          label={`${remainingTokens} / ${totalTokens} 개`}
           className="mb-4"
           style={{
             height: '20px',
             borderRadius: '10px',
+            backgroundColor: '#E8E7FF', // 연한 보라색 배경
           }}
         >
           <ProgressBar
@@ -134,6 +162,8 @@ export default function DetailBox({ buildingData, selectedDetail }) {
             style={{
               backgroundColor: '#6c63ff',
               backgroundImage: 'linear-gradient(to right, #6c63ff, #9a8bff)',
+              color: '#ffffff', // 바 안의 텍스트 색상 (흰색)
+              fontWeight: 'bold', // 텍스트를 두껍게
             }}
           />
         </ProgressBar>
@@ -142,16 +172,22 @@ export default function DetailBox({ buildingData, selectedDetail }) {
           className="mb-4 p-3 rounded-3 shadow-sm"
           style={{ backgroundColor: '#fff' }}
         >
-          <div className="d-flex justify-content-between align-items-center mb-2">
+          <div className="d-flex justify-content-between align-items-center mb-3">
             <span className="text-muted">토큰당 가격</span>
             <span className="fw-bold" style={{ color: '#7F3FFC' }}>
               {pricePerTokenKRW.toLocaleString()} 원
             </span>
           </div>
-          <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex justify-content-between align-items-center mb-3">
             <span className="text-muted">총 발행된 토큰 개수</span>
             <span className="fw-bold" style={{ color: '#7F3FFC' }}>
               {totalTokens.toLocaleString()} 개
+            </span>
+          </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <span className="text-muted">잔여 토큰 개수</span>
+            <span className="fw-bold" style={{ color: '#7F3FFC' }}>
+              {remainingTokens.toLocaleString()} 개
             </span>
           </div>
         </div>

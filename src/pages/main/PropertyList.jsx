@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Card, Container, Row, Col, Badge } from 'react-bootstrap';
 import PropertyCard from './PropertyCard';
 import styled from 'styled-components';
+import { CircleLoader } from 'react-spinners';
 
 const GradientText = styled.h5`
   color: #6c63ff;
@@ -10,7 +11,6 @@ const GradientText = styled.h5`
   margin-bottom: 0;
   font-size: 1.6rem;
 `;
-
 const StyledSelect = styled(Form.Select)`
   width: 120px;
   border: 2px solid #6c63ff;
@@ -19,6 +19,7 @@ const StyledSelect = styled(Form.Select)`
   background-color: rgba(108, 99, 255, 0.1);
   transition: all 0.3s ease;
   font-size: 0.9rem;
+  margin-left: 100px; /* 오른쪽으로 이동 */
 
   &:focus {
     box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
@@ -84,8 +85,15 @@ const PropertyCardWrapper = styled.div`
 `;
 
 const PropertyList = ({ moveToLocation, data, handleRoute, filter }) => {
-  console.log(filter);
   const [sortOrder, setSortOrder] = useState('수익률순');
+  const [loading, setLoading] = useState(true); // 로딩 상태 관리
+
+  useEffect(() => {
+    // 데이터 로딩을 시뮬레이션하는 경우
+    setTimeout(() => {
+      setLoading(false); // 데이터 로딩 완료
+    }, 2000); // 2초 후 로딩 완료 처리
+  }, []);
 
   // 필터링된 데이터 계산
   const filteredData = data.filter((property) => {
@@ -101,14 +109,19 @@ const PropertyList = ({ moveToLocation, data, handleRoute, filter }) => {
     if (sortOrder === '수익률순') {
       return b.percentage - a.percentage;
     } else if (sortOrder === '가격순') {
-      return a.price - b.price;
+      return b.price - a.price;
     } else if (sortOrder === '최신순') {
       return new Date(b.created_at) - new Date(a.created_at);
+    } else if (sortOrder === '전체') {
+      return a.name.localeCompare(b.name);
     }
     return 0;
   });
 
-  console.log(sortedData);
+  const handleSortChange = (event) => {
+    setSortOrder(event.target.value);
+  };
+
   return (
     <StyledCard>
       <Card.Body className="p-3">
@@ -116,6 +129,14 @@ const PropertyList = ({ moveToLocation, data, handleRoute, filter }) => {
           <Row className="mb-3 align-items-center">
             <Col>
               <GradientText>주변 SOL집 찾기</GradientText>
+            </Col>
+            <Col className="text-end">
+              {/* Sorting Dropdown */}
+              <StyledSelect value={sortOrder} onChange={handleSortChange}>
+                <option value="전체">전체</option>
+                <option value="가격순">가격순</option>
+                <option value="최신순">최신순</option>
+              </StyledSelect>
             </Col>
           </Row>
           <Row className="mb-3">
@@ -145,33 +166,44 @@ const PropertyList = ({ moveToLocation, data, handleRoute, filter }) => {
               </button>
             </Col>
           </Row>
-          <ScrollableCardList>
-            {sortedData?.length > 0 ? (
-              sortedData.map((property, index) => (
-                <PropertyCardWrapper key={index}>
-                  <PropertyCard
-                    id={property.id}
-                    address={property.address}
-                    name={property.name}
-                    image={property.photos[0]?.url}
-                    price={property.price}
-                    tokenSupply={property.token_supply}
-                    tokenPrice={property.token_cost}
-                    percentage={property.percentage}
-                    lat={property.lat}
-                    lng={property.lng}
-                    status={property.status}
-                    moveToLocation={moveToLocation}
-                    handleRoute={handleRoute}
-                  />
-                </PropertyCardWrapper>
-              ))
-            ) : (
-              <p className="text-center text-muted">
-                해당 조건에 맞는 데이터가 없습니다.
-              </p>
-            )}
-          </ScrollableCardList>
+
+          {/* 로딩 중일 때 동그랗게 돌아가는 로딩 표시 */}
+          {loading ? (
+            <div
+              className="d-flex justify-content-center"
+              style={{ marginTop: '250px' }}
+            >
+              <CircleLoader size={60} color="#6c63ff" />
+            </div>
+          ) : (
+            <ScrollableCardList>
+              {sortedData?.length > 0 ? (
+                sortedData.map((property, index) => (
+                  <PropertyCardWrapper key={index}>
+                    <PropertyCard
+                      id={property.id}
+                      address={property.address}
+                      name={property.name}
+                      image={property.photos[0]?.url}
+                      price={property.price}
+                      tokenSupply={property.token_supply}
+                      tokenPrice={property.token_cost}
+                      percentage={property.percentage}
+                      lat={property.lat}
+                      lng={property.lng}
+                      status={property.status}
+                      moveToLocation={moveToLocation}
+                      handleRoute={handleRoute}
+                    />
+                  </PropertyCardWrapper>
+                ))
+              ) : (
+                <p className="text-center text-muted">
+                  해당 조건에 맞는 데이터가 없습니다.
+                </p>
+              )}
+            </ScrollableCardList>
+          )}
         </Container>
       </Card.Body>
     </StyledCard>

@@ -39,13 +39,11 @@ function InvestmentInfo() {
     }
   };
 
-  if (loading) {
-    return <p className="text-center py-5">로딩 중...</p>;
-  }
-
   if (error) {
     return <p className="text-center py-5 text-danger">오류 발생: {error}</p>;
   }
+
+  console.log('해피', property);
 
   return (
     <Container className="mb-1">
@@ -73,12 +71,21 @@ function InvestmentInfo() {
                     <td>
                       <Button
                         size="sm"
-                        className="rounded-pill px-3 custom-button"
+                        className={`rounded-pill px-3 custom-button ${
+                          room.subscription_status === 'pending'
+                            ? ''
+                            : 'btn-success'
+                        }`}
                         onClick={() =>
-                          handleInvestClick(room.room_id, 'pending')
+                          handleInvestClick(
+                            room.room_id,
+                            room.subscription_status
+                          )
                         }
                       >
-                        청약하기
+                        {room.subscription_status === 'pending'
+                          ? '청약하기'
+                          : '투자하기'}
                       </Button>
                     </td>
                   </tr>
@@ -87,7 +94,11 @@ function InvestmentInfo() {
             </Table>
           </div>
         ) : (
-          <p className="text-muted text-center py-5">매물 정보가 없습니다.</p>
+          <p className="text-muted text-center py-5">
+            {loading
+              ? '매물 정보를 불러오고 있습니다.'
+              : '매물 정보가 없습니다.'}
+          </p>
         )}
       </Card>
     </Container>
