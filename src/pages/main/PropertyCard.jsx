@@ -76,6 +76,7 @@ const PropertyCard = ({
   moveToLocation,
   lat,
   lng,
+  status,
   handleRoute,
 }) => {
   const navigate = useNavigate();
@@ -106,25 +107,26 @@ const PropertyCard = ({
         <Card.Text style={cardStyles.textGroup}>
           <div style={cardStyles.row}>
             <span>공모 금액</span>
-            <span>{price}원</span>
+            <span>{price} 억원</span>
           </div>
           <div style={cardStyles.row}>
             <span>발행된 토큰 양</span>
-            <span>{tokenSupply}개</span>
+            <span>{tokenSupply} 개</span>
           </div>
           <div style={cardStyles.row}>
             <span>토큰 당 가격</span>
-            <span>{tokenPrice}만원</span>
+            <span>{tokenPrice} 만원</span>
           </div>
         </Card.Text>
         <div style={cardStyles.buttonContainer}>
           <Button
             style={cardStyles.button}
             onClick={(e) => {
-              e.stopPropagation(); // 부모 Card 클릭 이벤트 중
+              e.stopPropagation();
               handleRoute(id);
             }}
           >
+            {status == '처'}
             투자 상세 페이지로 이동 {`>`}
           </Button>
         </div>
