@@ -13,16 +13,13 @@ export default function DetailBox({ buildingData, selectedDetail }) {
   console.log(selectedDetail);
   const [subscriptionAmount, setSubscriptionAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [totalTokens, setTotalTokens] = useState(
-    parseInt(selectedDetail?.['토큰발행'], 10) || 0
-  );
+  const [totalTokens, setTotalTokens] = useState(0);
   const [tokenCost, setTokenCost] = useState(0);
   const [remainingTokens, setRemainingTokens] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [ethCost, setEthCost] = useState(0);
   const [krwCost, setKrwCost] = useState(0);
-
-  console.log(selectedDetail);
+  const [period, setPeriod] = useState(0);
 
   useEffect(() => {
     // roomId로 해당 room 데이터를 가져오는 함수
@@ -37,9 +34,9 @@ export default function DetailBox({ buildingData, selectedDetail }) {
         );
 
         if (selectedRoom) {
-          console.log('헤이', selectedRoom);
           setTotalTokens(parseInt(selectedRoom.token_supply, 10) || 0);
           setTokenCost(selectedRoom.token_cost);
+          setPeriod(selectedRoom.period);
         } else {
           console.warn('해당 roomId에 맞는 방을 찾을 수 없습니다.');
         }
@@ -149,9 +146,6 @@ export default function DetailBox({ buildingData, selectedDetail }) {
     <div className="card border-0 shadow-sm">
       <div className="card-body p-4" style={{ backgroundColor: '#F8F7FF' }}>
         <h4 className="card-title text-center mb-3 fw-bold">{title}</h4>
-        <p className="text-center text-muted small mb-4">
-          청약 기간: {subscriptionStart} ~ {subscriptionEnd}
-        </p>
 
         <ProgressBar
           now={progress}
