@@ -1,0 +1,43 @@
+.investment-card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .investment-card:hover {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .investment-table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  .investment-table thead {
+    background-color: #f8f9fa;
+  }
+  
+  .investment-table th,
+  .investment-table td {
+    border: none;
+    padding: 1rem;
+    vertical-align: middle;
+  }
+  
+  .investment-table tbody tr {
+    transition: background-color 0.3s ease;
+  }
+  
+  .investment-table tbody tr:hover {
+    background-color: #f1f3f5;
+  }
+  
+  .investment-table .btn-outline-primary {
+    transition: all 0.3s ease;
+  }
+  
+  .investment-table .btn-outline-primary:hover {
+    transform: translateY(-2px);
+  }
+  
+  

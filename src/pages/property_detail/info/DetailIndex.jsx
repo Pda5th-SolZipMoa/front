@@ -206,11 +206,6 @@ export default function PropertyDetail() {
           {/* Right Column - Details */}
           <Col md={5}>
             <DetailBox buildingData={buildingData} selectedDetail={selectedDetail} />
-            <Button className="w-10 mb-3" style={{ backgroundColor: '#6B21A8', borderColor: '#6B21A8' }}
-              onClick={handleApply} // 클릭 핸들러 연결
-            >
-              청약하기
-            </Button>
           </Col>
 
         </Row>
