@@ -40,4 +40,30 @@
     transform: translateY(-2px);
   }
   
+  /* Investment Table Styling */
+.investment-table {
+    text-align: center;
+  }
+  
+  .investment-table thead th,
+  .investment-table tbody td {
+    text-align: center; /* 수평 중앙 정렬 */
+    vertical-align: middle; /* 수직 중앙 정렬 */
+  }
+  
+  /* Hover effect for rows */
+  .investment-table tbody tr:hover {
+    background-color: #f8f9fa; /* 행 호버 시 색상 */
+  }
+  
+  /* Custom Button Styling */
+  .custom-button {
+    font-weight: 600; /* 텍스트 굵게 */
+    transition: all 0.3s ease; /* 부드러운 전환 효과 */
+  }
+  
+  .custom-button:hover {
+    background-color: #6f42c1; /* 호버 시 보라색 배경 */
+    color: #fff; /* 흰색 텍스트 */
+  }
   

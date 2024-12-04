@@ -50,13 +50,16 @@ export default function Login() {
         alignItems: 'center',
         minHeight: '100vh', // 화면 전체 높이
         width: '100vw', // 화면 전체 너비
-        background: 'linear-gradient(100deg, #F3EDFB 56.38%, #FAE7F7 98.45%)',
         margin: 0, // 여백 제거
         padding: 0, // 패딩 제거
         overflow: 'hidden', // 필요 시 스크롤 방지
+        backgroundImage: 'url("/loginimage.jpg")', // 배경 이미지 설정
+        backgroundSize: 'cover', // 배경 이미지 꽉 채우기
+        backgroundPosition: 'center', // 이미지 중앙 정렬
+        backgroundRepeat: 'no-repeat', // 반복 금지
       }}
     >
-      <div className="card shadow-sm" style={{ width: '400px' }}>
+      <div className="card shadow-sm" style={{ width: '400px', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
         <div className="card-body p-4">
           <h2 className="text-center mb-4">로그인</h2>
           <p className="text-muted text-center mb-4">전화번호로 로그인하세요</p>

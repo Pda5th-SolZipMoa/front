@@ -33,7 +33,7 @@ export const PropertyDocs = ({ formData, setFormData }) => {
         />
       )}
       <Form.Text className="text-muted">
-        건물 소유권 증명서, 감정평가서 등의 법적 서류를 업로드하세요
+        건물 소유권 증명서, 감정평가서 등의 법적 서류를 등록해 주세요
       </Form.Text>
     </Form.Group>
   );

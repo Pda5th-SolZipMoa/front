@@ -39,7 +39,7 @@ const PropertyCreate = () => {
     maintenance_cost: '',
     token_supply: '',
     token_cost: '',
-    period: '',
+    // period: '',
   });
 
   const getProvider = async () => {
@@ -106,7 +106,7 @@ const PropertyCreate = () => {
         'home_size',
         'room_cnt',
         'maintenance_cost',
-        'period',
+        // 'period',
       ];
 
       // FormData에 필수 필드 추가
@@ -178,20 +178,32 @@ const PropertyCreate = () => {
       <Header />
 
       <Container className="py-4" style={{ maxWidth: '800px' }}>
-        <Card className="shadow-sm">
+        {/* <Card className="shadow-sm"> */}
           <Card.Body className="p-5">
             <h2
               className="text-center mb-4"
-              style={{ color: '#5a287d', fontWeight: '600' }}
+              style={{ color: '#6c63ff', fontWeight: '600' }}
             >
               부동산 토큰 발행
             </h2>
 
             <ProgressBar
-              now={(currentPage / 3) * 100}
-              className="mb-4"
-              variant="info"
-            />
+
+            now={(currentPage / 3) * 100}
+            className="mb-4"
+            style={{
+              backgroundColor: '#F3F0FF',
+            }}
+            >
+            <div
+              style={{
+              width: `${(currentPage / 3) * 100}%`,
+              height: '100%',
+              backgroundColor: '#6c63ff',
+              borderRadius: '4px',
+              }}
+            ></div>
+            </ProgressBar>
 
             <Form
               onSubmit={handleSubmit}
@@ -257,8 +269,8 @@ const PropertyCreate = () => {
                     onClick={nextPage}
                     className="px-4 py-2 ms-auto"
                     style={{
-                      backgroundColor: '#7950f2',
-                      borderColor: '#7950f2',
+                      backgroundColor: '#6c63ff',
+                      borderColor: '#6c63ff',
                     }}
                   >
                     다음
@@ -274,13 +286,13 @@ const PropertyCreate = () => {
                       borderColor: '#7950f2',
                     }}
                   >
-                    토큰 발행 신청하기
+                    토큰 발행 신청
                   </Button>
                 )}
               </div>
             </Form>
           </Card.Body>
-        </Card>
+        {/* </Card> */}
       </Container>
     </div>
   );

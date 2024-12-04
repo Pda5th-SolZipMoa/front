@@ -110,7 +110,7 @@ export default function PendingOrders() {
             ) : (
               <tr>
                 <td colSpan="7" className="text-center">
-                  미체결된 주문이 없습니다.
+                  미체결된 주문이 없습니다
                 </td>
               </tr>
             )}

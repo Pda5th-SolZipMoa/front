@@ -7,7 +7,7 @@ function PropertyHeader({ name, address, code }) {
       <div className="property-header-body">
         <div className="d-flex justify-content-between align-items-center">
           <div>
-          <h4 className="card-title h3" style={{color:"#5A287D"}}>{name}</h4>
+          <h4 className="card-title h3" style={{color:"#6F42C1"}}>{name}</h4>
             <p className="text-dark large">{address}</p>
             <p className="text-muted small">건물 번호: {code || '해당 코드 정보가 없습니다'}</p>
           </div>

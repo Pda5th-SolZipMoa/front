@@ -85,7 +85,7 @@ export default function SubscriptionRecords() {
             ) : (
               <tr>
                 <td colSpan="6" className="text-center">
-                  청약 기록이 없습니다.
+                  청약 기록이 없습니다
                 </td>
               </tr>
             )}

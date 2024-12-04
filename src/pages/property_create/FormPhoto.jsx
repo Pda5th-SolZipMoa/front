@@ -67,12 +67,12 @@ export const PropertyPhoto = ({ images, setImages }) => {
             onClick={addImageField}
             style={{ width: '200px', height: '200px' }}
           >
-            + 이미지 추가
+            + 이미지
           </Button>
         )}
       </div>
       <Form.Text className="text-muted">
-        최대 3장까지 업로드 가능합니다.
+        최대 3장까지 업로드 가능
       </Form.Text>
     </Form.Group>
   );
