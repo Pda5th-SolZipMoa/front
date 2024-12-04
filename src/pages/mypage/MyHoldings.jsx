@@ -1,14 +1,16 @@
 import React from 'react';
 import { Card, Row, Col, Container } from 'react-bootstrap';
 import { useOwnershipContext } from './OwnershipContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyHoldings() {
   const { ownerships } = useOwnershipContext();
+  const navigate = useNavigate();
 
   return (
     <Card className="shadow-sm bg-light border-light">
       <Card.Body>
-        <Card.Title className="text-primary">보유 종목</Card.Title>
+        <Card.Title className="text-primary fs-4">보유 종목</Card.Title>
         <Container fluid>
           {ownerships.length > 0 ? (
             <Row>
@@ -22,17 +24,19 @@ export default function MyHoldings() {
                 const isProfitable = profitLoss > 0;
 
                 return (
-                  // 각 카드가 한 줄에 3개씩 배치되도록 설정
                   <Col key={index} lg={4} md={6} sm={12} className="mb-4">
-                    <Card className="h-100 border-0 shadow-sm">
+                    <Card
+                      className="h-100 border-0 shadow-sm"
+                      onClick={() => navigate(`/property/${token.id}/trade`)} // 클릭 시 이동
+                      style={{ cursor: 'pointer' }} // 클릭 가능한 카드로 보이게 스타일 적용
+                    >
                       <Card.Body>
-                        <div className="d-flex justify-content-between align-items-center mb-4">
-                          {/* 건물 이름과 층수 표시 */}
-                          <h3 className="m-0 fw-semibold">
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                          <h4 className="m-0 fw-semibold fs-5">
                             {token.building_name} - {token.detail_floor}층
-                          </h3>
+                          </h4>
                           <span
-                            className={`fs-5 fw-semibold ${
+                            className={`fs-6 fw-semibold ${
                               isProfitable ? 'text-success' : 'text-danger'
                             }`}
                           >
@@ -40,40 +44,40 @@ export default function MyHoldings() {
                           </span>
                         </div>
 
-                        <Row className="g-4">
+                        <Row className="g-3">
                           <Col xs={6}>
-                            <div className="text-muted mb-2">보유수량</div>
-                            <div className="fs-5">
+                            <div className="text-muted mb-1">보유수량</div>
+                            <div className="fs-6">
                               {token.quantity.toLocaleString()}
                             </div>
                           </Col>
 
                           <Col xs={6}>
-                            <div className="text-muted mb-2">현재 금액</div>
-                            <div className="fs-5">
+                            <div className="text-muted mb-1">현재 금액</div>
+                            <div className="fs-6">
                               {latestPrice.toLocaleString()} KRW
                             </div>
                           </Col>
 
                           <Col xs={6}>
-                            <div className="text-muted mb-2">평가금액</div>
-                            <div className="fs-5">
+                            <div className="text-muted mb-1">평가금액</div>
+                            <div className="fs-6">
                               {evalValue.toLocaleString()} KRW
                             </div>
                           </Col>
 
                           <Col xs={6}>
-                            <div className="text-muted mb-2">매수평균가</div>
-                            <div className="fs-5">
+                            <div className="text-muted mb-1">매수평균가</div>
+                            <div className="fs-6">
                               {token.buy_price?.toLocaleString() || '-'} KRW
                             </div>
                           </Col>
                         </Row>
 
-                        <div className="mt-4 pt-3 border-top">
-                          <div className="text-muted mb-2">평가손익</div>
+                        <div className="mt-3 pt-2 border-top">
+                          <div className="text-muted mb-1">평가손익</div>
                           <div
-                            className={`fs-4 fw-bold ${
+                            className={`fs-5 fw-bold ${
                               isProfitable ? 'text-success' : 'text-danger'
                             }`}
                           >
