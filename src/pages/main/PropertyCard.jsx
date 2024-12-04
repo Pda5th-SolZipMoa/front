@@ -80,7 +80,9 @@ const PropertyCard = ({
 }) => {
   const navigate = useNavigate();
   const percentageColor = percentage > 0 ? 'text-success' : 'text-danger';
+  const fullImageUrls = `http://3.37.185.91:8000/${image}`;
 
+  console.log(fullImageUrls);
   return (
     <Card
       onClick={() => {
@@ -96,7 +98,7 @@ const PropertyCard = ({
         e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.1)';
       }}
     >
-      <Card.Img variant="top" src={image} style={cardStyles.img} />
+      <Card.Img variant="top" src={fullImageUrls} style={cardStyles.img} />
       <Card.Body style={cardStyles.cardBody}>
         <div style={cardStyles.row}>
           <Card.Title style={cardStyles.title}>{name}</Card.Title>
