@@ -27,7 +27,9 @@ export default function MyHoldings() {
                   <Col key={index} lg={4} md={6} sm={12} className="mb-4">
                     <Card
                       className="h-100 border-0 shadow-sm"
-                      onClick={() => navigate(`/property/${token.id}/trade`)} // 클릭 시 이동
+                      onClick={() =>
+                        navigate(`/property/${token.property_detail_id}/trade`)
+                      } // 클릭 시 이동
                       style={{ cursor: 'pointer' }} // 클릭 가능한 카드로 보이게 스타일 적용
                     >
                       <Card.Body>
