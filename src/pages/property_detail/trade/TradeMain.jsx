@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Navbar } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { TradeProvider } from './TradeContext';
 import TradeGraph from './TradeGraph';
@@ -12,19 +12,21 @@ export default function TradeMain() {
 
   return (
     <TradeProvider id={id}>
-      <div className="bg-light min-vh-100">
+      <div className="min-vh-100">
         <Header></Header>
 
-        <Container>
-          <Row>
-            <Col md={8}>
-              <TradeGraph />
-            </Col>
-            <Col md={4}>
-              <TradeBoard />
-            </Col>
-          </Row>
-        </Container>
+        <div className="p-4">
+          <Container>
+            <Row>
+              <Col md={8}>
+                <TradeGraph />
+              </Col>
+              <Col md={4}>
+                <TradeBoard />
+              </Col>
+            </Row>
+          </Container>
+        </div>
       </div>
     </TradeProvider>
   );

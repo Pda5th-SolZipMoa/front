@@ -25,35 +25,43 @@ export default function TradeOptionsBox({ type, trades }) {
 
   return (
     <div className="mb-3 p-3 border rounded shadow-sm bg-white">
-      <Table bordered hover size="sm" className="text-center custom-table">
-        <thead>
-          <tr className="bg-pastel-purple text-white">
-            <th>가격</th>
-            <th>수량</th>
-            <th>총액</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedTrades && sortedTrades.length > 0 ? (
-            sortedTrades.map((trade, index) => (
-              <tr
-                key={index}
-                className={type === 'buy' ? 'text-success' : 'text-danger'}
-              >
-                <td>{trade.price.toLocaleString()}</td>
-                <td>{trade.quantity.toLocaleString()}</td>
-                <td>{(trade.price * trade.quantity).toLocaleString()}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="3" className="text-center text-muted">
-                데이터가 없습니다.
-              </td>
+      {/* 스타일을 직접 여기에 지정 */}
+      <div
+        style={{
+          maxHeight: '200px', // 최대 높이 설정
+          overflowY: 'auto', // 세로 스크롤 활성화
+        }}
+      >
+        <Table bordered hover size="sm" className="text-center custom-table">
+          <thead>
+            <tr className="bg-pastel-purple text-white">
+              <th>가격</th>
+              <th>수량</th>
+              <th>총액</th>
             </tr>
-          )}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {sortedTrades && sortedTrades.length > 0 ? (
+              sortedTrades.map((trade, index) => (
+                <tr
+                  key={index}
+                  className={type === 'buy' ? 'text-success' : 'text-danger'}
+                >
+                  <td>{trade.price.toLocaleString()}</td>
+                  <td>{trade.quantity.toLocaleString()}</td>
+                  <td>{(trade.price * trade.quantity).toLocaleString()}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="text-center text-muted">
+                  데이터가 없습니다.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import { Container, Form, Button } from 'react-bootstrap';
+import { Send } from 'react-bootstrap-icons';
 import logo from "/side_detail_gpt.png";
+import "./ChatGPT.css";
 
 
 function ChatGPT() {
@@ -11,113 +14,99 @@ function ChatGPT() {
     }
   ]);
   const [input, setInput] = useState("");
+  const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage = { type: 'user', content: { text: input } };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-    
-    setInput("");
+
+    setInput('');
 
     try {
-      const response = await axios.post('http://localhost:8000/api/chat', {
+      const response = await axios.post('api/chat', {
         user_message: input
       });
 
-      const botMessage = { type: 'bot', content: { text: response.data.bot_reply } };
+      const botMessage = {
+        type: 'bot',
+        content: { text: response.data.bot_reply },
+      };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
     } catch (error) {
-      console.error("ChatGPT API 호출 오류:", error);
-      const errorMessage = { type: 'bot', content: { text: '오류가 발생했습니다. 다시 시도해주세요.' } };
+      console.error('ChatGPT API 호출 오류:', error);
+      const errorMessage = {
+        type: 'bot',
+        content: { text: '오류가 발생했습니다. 다시 시도해주세요.' },
+      };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     }
   };
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
+    adjustTextareaHeight();
+  };
+
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
   };
 
   return (
-    <div className="card mt-4">
-      <div className="card-header">
-        <h3 className="h5 mb-0"> AI 쏠 매니저와 상담하기 </h3>
+    <Container className="mt-5 chat-container">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+      <h4 className="card-title h5" style={{color:"#6C63FF"}}>SoLMoa에 질문하기</h4>
       </div>
-      <div className="card-body">
-        <div className="chat-container">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`d-flex gap-3 mb-4 ${message.type === 'user' ? 'flex-row-reverse' : ''}`}
-            >
-              {message.type === 'bot' && (
-                <div
-                  className="rounded-circle bg-light d-flex align-items-center justify-content-center"
-                  style={{ width: '40px', height: '40px', flexShrink: 0 }}
-                >
-                  <img
-                    src={logo}
-                    alt="Bot"
-                    className="logo"
-                    style={{ width: '40px', height: '40px' }}
-                  />
-                </div>
-              )}
-              <div
-                className="flex-grow-1"
-                style={{
-                  textAlign: message.type === 'user' ? 'right' : 'left',
-                  width: '100%',
-                }}
-              >
-                <div
-                  className={`p-3 rounded`}
-                  style={{
-                    display: 'inline-block',
-                    maxWidth: '70%',
-                    margin: message.type === 'user' ? '0 0 0 auto' : '0 auto 0 0',
-                    wordWrap: 'break-word',
-                    backgroundColor: message.type === 'user' ? '#FAE7F7' : '#E5EDFD',
-                    color: '#000000',
-                  }}
-                >
-                  <p className="mb-0">{message.content.text}</p>
-                </div>
+      <div className="chat-messages" ref={chatContainerRef}>
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`message ${message.type}`}
+          >
+            {message.type === 'bot' && (
+              <div className="bot-avatar">
+                <img src={logo} alt="Bot" className="logo" />
               </div>
+            )}
+            <div className="message-content">
+              <p>{message.content.text}</p>
             </div>
-          ))}
-        </div>
-        <div className="mt-4">
-          <div className="input-group">
-            <textarea
-              ref={textareaRef}
-              className="form-control"
-              placeholder="궁금한 투자 정보를 문의해세요!"
-              aria-label="Message input"
-              value={input}
-              onChange={handleInputChange}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
-              style={{
-                overflow: "auto",
-                resize: "none",
-                height: "40px",
-              }}
-            />
-            <button className="btn btn-purple" type="button" onClick={sendMessage}>
-              전송
-            </button>
           </div>
-        </div>
+        ))}
       </div>
-    </div>
+      <Form className="mt-4 chat-input">
+        <Form.Group className="d-flex">
+          <Form.Control
+            as="textarea"
+            ref={textareaRef}
+            placeholder="궁금한 투자 정보를 문의해세요!"
+            value={input}
+            onChange={handleInputChange}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+          />
+          <Button onClick={sendMessage} className="send-button custom-send">
+            <Send size={20} />
+          </Button>
+        </Form.Group>
+      </Form>
+    </Container>
   );
 }
 
 export default ChatGPT;
-
