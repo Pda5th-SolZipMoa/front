@@ -173,6 +173,53 @@ const PropertyCreate = () => {
     }
   };
 
+  // 현재 페이지의 필수 입력 필드가 모두 채워졌는지 확인하는 함수
+  const isCurrentPageValid = () => {
+    if (currentPage === 1) {
+      const requiredFields = [
+        'name',
+        'address',
+        'token_supply',
+        'token_cost',
+        'price',
+      ];
+      for (let field of requiredFields) {
+        if (
+          !formData[field] ||
+          (typeof formData[field] === 'string' && formData[field].trim() === '')
+        ) {
+          return false;
+        }
+      }
+      return true;
+    } else if (currentPage === 2) {
+      const requiredFields = [
+        'detail_floor',
+        'home_size',
+        'room_cnt',
+        'maintenance_cost',
+      ];
+      for (let field of requiredFields) {
+        if (
+          !formData[field] ||
+          (typeof formData[field] === 'string' && formData[field].trim() === '')
+        ) {
+          return false;
+        }
+      }
+      return true;
+    } else if (currentPage === 3) {
+      if (!formData['legalDocs']) {
+        return false;
+      }
+      if (!formData['legalNotice']) {
+        return false;
+      }
+      return true;
+    }
+    return true;
+  };
+
   return (
     <div>
       <Header />
@@ -188,11 +235,22 @@ const PropertyCreate = () => {
             </h2>
 
             <ProgressBar
-              now={(currentPage / 3) * 100}
-              className="mb-4"
-              variant="info"
-            />
-
+            now={(currentPage / 3) * 100}
+            className="mb-4"
+            style={{
+              backgroundColor: '#EDE7F6',
+            }}
+            >
+            <div
+              style={{
+              width: `${(currentPage / 3) * 100}%`,
+              height: '100%',
+              backgroundColor: '#9370DB',
+              borderRadius: '4px',
+              }}
+            ></div>
+            </ProgressBar>
+            
             <Form
               onSubmit={handleSubmit}
               className="mx-auto"
@@ -215,7 +273,10 @@ const PropertyCreate = () => {
               )}
               {currentPage === 3 && (
                 <>
-                  <PropertyDocs formData={formData} setFormData={setFormData} />
+                  <PropertyDocs
+                    formData={formData}
+                    setFormData={setFormData}
+                  />
                   <Form.Group className="mb-4">
                     <div className="d-flex align-items-center gap-2">
                       <Form.Check
@@ -260,6 +321,7 @@ const PropertyCreate = () => {
                       backgroundColor: '#7950f2',
                       borderColor: '#7950f2',
                     }}
+                    disabled={!isCurrentPageValid()} // 여기에 disabled 속성 추가
                   >
                     다음
                   </Button>
@@ -268,7 +330,7 @@ const PropertyCreate = () => {
                     variant="primary"
                     type="submit"
                     className="px-4 py-2 ms-auto"
-                    disabled={!formData.legalNotice}
+                    disabled={!isCurrentPageValid()} // 여기에 disabled 속성 추가
                     style={{
                       backgroundColor: '#7950f2',
                       borderColor: '#7950f2',
