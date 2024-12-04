@@ -5,11 +5,12 @@ import { Send } from 'react-bootstrap-icons';
 import logo from "/side_detail_gpt.png";
 import "./ChatGPT.css";
 
+
 function ChatGPT() {
   const [messages, setMessages] = useState([
     {
       type: 'bot',
-      content: { text: '일교님 안녕하세요. 저에게 투자정보를 문의하시면, 빠르고 신속하게 알려드릴게요.' }
+      content: { text: '안녕하세요. 저에게 투자정보를 문의하시면, 빠르고 신속하게 알려드릴게요.' }
     }
   ]);
   const [input, setInput] = useState("");
@@ -27,19 +28,25 @@ function ChatGPT() {
 
     const userMessage = { type: 'user', content: { text: input } };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-    
-    setInput("");
+
+    setInput('');
 
     try {
       const response = await axios.post('api/chat', {
         user_message: input
       });
 
-      const botMessage = { type: 'bot', content: { text: response.data.bot_reply } };
+      const botMessage = {
+        type: 'bot',
+        content: { text: response.data.bot_reply },
+      };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
     } catch (error) {
-      console.error("ChatGPT API 호출 오류:", error);
-      const errorMessage = { type: 'bot', content: { text: '오류가 발생했습니다. 다시 시도해주세요.' } };
+      console.error('ChatGPT API 호출 오류:', error);
+      const errorMessage = {
+        type: 'bot',
+        content: { text: '오류가 발생했습니다. 다시 시도해주세요.' },
+      };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     }
   };
@@ -103,4 +110,3 @@ function ChatGPT() {
 }
 
 export default ChatGPT;
-

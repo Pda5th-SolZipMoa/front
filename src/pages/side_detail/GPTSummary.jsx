@@ -16,34 +16,37 @@ function GPTSummary() {
       const questions = [
         `건물 정보에 대해 150자 내외로 알려주세요. 건물명: ${buildingData['건물정보']['건물명']}`,
         `해당 건물의 투자 정보에 대해 150자 내외로 설명해주세요. 건물명: ${buildingData['건물정보']['건물명']}`,
-        `이 건물에 대한 향후 투자 전략을 200자 내외로 제안해주세요. 건물명: ${buildingData['건물정보']['건물명']}`
+        `이 건물에 대한 향후 투자 전략을 200자 내외로 제안해주세요. 건물명: ${buildingData['건물정보']['건물명']}`,
       ];
 
       const responses = await Promise.all(
         questions.map((question) =>
-          axios.post('http://localhost:8000/api/chat', { user_message: question })
+          axios.post('/api/chat', { user_message: question })
         )
       );
 
       const botMessages = responses.map((response, index) => {
-        const categories = ["건물 정보", "투자 정보", "향후 투자 전략"];
+        const categories = ['건물 정보', '투자 정보', '향후 투자 전략'];
         return {
           type: 'bot',
           content: {
             category: categories[index],
-            text: response.data.bot_reply
-          }
+            text: response.data.bot_reply,
+          },
         };
       });
 
       setMessages(botMessages);
     } catch (error) {
-      console.error("ChatGPT API 호출 오류:", error);
+      console.error('ChatGPT API 호출 오류:', error);
       setMessages([
         {
           type: 'bot',
-          content: { category: "오류", text: "오류가 발생했습니다. 다시 시도해주세요." }
-        }
+          content: {
+            category: '오류',
+            text: '오류가 발생했습니다. 다시 시도해주세요.',
+          },
+        },
       ]);
     } finally {
       setIsLoading(false);

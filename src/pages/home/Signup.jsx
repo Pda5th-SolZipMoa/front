@@ -40,7 +40,6 @@ export default function Signup() {
           'Content-Type': 'application/json',
         },
       });
-
       if (response.status === 200 || response.status === 201) {
         alert('회원가입 성공!');
         console.log('Response:', response.data);

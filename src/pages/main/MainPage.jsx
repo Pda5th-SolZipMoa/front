@@ -4,20 +4,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from '../../components/header/Header';
 import Map from '../../components/map/Map';
 import PropertyList from './PropertyList';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export const Main = () => {
   const [searchQuery, setSearchQuery] = useState(''); // 검색어 상태
   const [searchResults, setSearchResults] = useState([]); // 검색 결과 상태
   const [selectedLocation, setSelectedLocation] = useState(null); // 선택된 위치 상태
-  const [buildings, setBuildings] = useState([]); // 빌딩 개수
+  const [buildings, setBuildings] = useState([]); // 빌딩 데이터 상태
   const navigate = useNavigate();
+  const [buildingData, setBuildingData] = useState(null);
 
   useEffect(() => {
     const fetchBuildingLists = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/buildings');
+        const response = await axios.get('/api/buildings');
         setBuildings(response.data);
       } catch (error) {
         console.error('Error fetching building data:', error);
@@ -31,12 +32,40 @@ export const Main = () => {
     setSelectedLocation({ latitude, longitude });
   };
 
-  const handleRouteButton = (id) => {
-    navigate(`/property_detail/info/${id}`);
+  const handleRouteButton = async (id) => {
+    try {
+      // API 요청하여 빌딩 데이터 가져오기
+      const response = await axios.get(
+        `/api/building-latest-transactions/${id}`
+      );
+
+      // 응답 데이터가 정상적으로 반환되었는지 확인
+      if (
+        response.status === 200 &&
+        response.data &&
+        response.data['건물정보'] &&
+        response.data['건물정보']['매물목록']
+      ) {
+        const buildingData = response.data; // 응답에서 건물정보 추출
+
+        console.log(buildingData); // 건물 정보 출력
+
+        // 데이터와 함께 새로운 경로로 이동
+        navigate('/property_sidedetail', {
+          state: {
+            buildingData, // 상태로 건물 데이터 전달
+          },
+        });
+      } else {
+        console.error('Building data not found in the response');
+      }
+    } catch (error) {
+      console.error('Error fetching building data:', error);
+    }
   };
 
   return (
-    <div style={{ backgroundColor: '#FAF8FF', minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh' }}>
       <Header
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}

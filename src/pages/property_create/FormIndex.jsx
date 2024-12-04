@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Card, ProgressBar } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom'; // useNavigate import 추가
+import { useNavigate } from 'react-router-dom';
 import { PropertyContents } from './FormContents';
 import { PropertyDetails } from './FormDetails';
 import { PropertyPhoto } from './FormPhoto';
 import { PropertyDocs } from './FormDocs';
 import Header from '../../components/header/Header';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ethers } from 'ethers';
 import myToken from '../../hooks/myToken.json';
@@ -16,13 +15,14 @@ const contractAddress = import.meta.env.VITE_APP_CONTRACT_ADDRESS;
 const PropertyCreate = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [images, setImages] = useState([]);
-  
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     address: '',
     created_at: '',
     price: '',
-    owner_id: '',
+    // owner_id: '',
     building_code: '',
     platArea: '',
     bcRat: '',
@@ -37,9 +37,9 @@ const PropertyCreate = () => {
     home_size: '',
     room_cnt: '',
     maintenance_cost: '',
-    token_supply:'',
-    token_cost:'',
-    period:'',
+    token_supply: '',
+    token_cost: '',
+    period: '',
   });
 
   const getProvider = async () => {
@@ -51,12 +51,13 @@ const PropertyCreate = () => {
     return new ethers.BrowserProvider(window.ethereum);
   };
 
+  // 토큰 발행 함수
   const mintToken = async () => {
     try {
       const { token_supply, building_code, detail_floor } = formData;
       const provider = await getProvider();
       if (!provider) return;
-      console.log(building_code)
+      console.log(building_code);
 
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(
@@ -68,7 +69,10 @@ const PropertyCreate = () => {
       const tx = await contract.mintToken(
         parseInt(token_supply, 10),
         building_code,
-        parseInt(detail_floor, 10)
+        parseInt(detail_floor, 10),
+        {
+          gasLimit: 500000,
+        }
       );
 
       // 트랜잭션 완료 대기
@@ -82,16 +86,15 @@ const PropertyCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      // 토큰 발행 및 ID 반환
-      const tokenId = await mintToken();
 
-      // 서버에 데이터 전송
+    try {
+      // FormData 초기화
       const data = new FormData();
       const requiredFields = [
         'name',
         'address',
         'token_supply',
+        'token_cost',
         'price',
         'building_code',
         'lat',
@@ -103,16 +106,10 @@ const PropertyCreate = () => {
         'home_size',
         'room_cnt',
         'maintenance_cost',
+        'period',
       ];
 
-    for (const key of requiredFields) {
-      if (key === 'legalNotice') {
-        data.append(key, formData[key] ? 'true' : 'false');
-      } else if (formData[key]) {
-        data.append(key, formData[key]);
-      }
-    }
-
+      // FormData에 필수 필드 추가
       for (const key of requiredFields) {
         if (key === 'legalNotice') {
           data.append(key, formData[key] ? 'true' : 'false');
@@ -121,35 +118,46 @@ const PropertyCreate = () => {
         }
       }
 
+      // 이미지 추가
       images.forEach((image) => {
         if (image) {
           data.append('images', image);
         }
       });
 
-      data.append('token_id', tokenId); // 발행된 토큰 ID 추가
-
+      // 서버에 데이터 전송
       const response = await fetch('/api/apartments/token', {
         method: 'POST',
         body: data,
       });
-      const result = await response.json();
-      if (response.ok) {
 
-        alert('토큰 발행 성공!');
-        console.log('Response:', result);
-        navigate(`/property_detail/${result.property_id}`, {
-          state: { propertyData: result },
-      });
-
-      } else {
-        const result = await response.json();
-        alert(`오류 발생: ${result.detail}`);
-        console.error('서버 오류:', result);
+      // 응답 상태 확인
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('서버 응답 오류:', errorData);
+        throw new Error(
+          `서버 오류: ${errorData.message || response.statusText}`
+        );
       }
+
+      // 서버 응답 처리
+      const result = await response.json();
+      await mintToken();
+
+      alert('토큰 발행 성공!');
+      navigate(`/main`);
     } catch (error) {
-      console.error('토큰 발행 및 서버 통신 중 오류:', error);
-      alert('오류가 발생했습니다. 다시 시도하세요.');
+      // 에러 상세 출력
+      console.error('오류 발생:', error);
+
+      // 에러 유형별 사용자 메시지 표시
+      if (error.name === 'TypeError') {
+        alert('네트워크 오류가 발생했습니다. 인터넷 연결을 확인하세요.');
+      } else if (error.message.startsWith('서버 오류:')) {
+        alert(`서버에서 처리 중 오류가 발생했습니다: ${error.message}`);
+      } else {
+        alert('알 수 없는 오류가 발생했습니다. 다시 시도하세요.');
+      }
     }
   };
 
@@ -165,36 +173,35 @@ const PropertyCreate = () => {
     }
   };
 
-  return (  
-    <div style={{ 
-      backgroundColor: '#f8f0ff',
-      minHeight: '100vh',
-      paddingTop: '2rem',
-      paddingBottom: '2rem'
-    }}>
-      {/* Header 추가 */}
-      <Header
-      />
+  return (
+    <div>
+      <Header />
 
-      <Container style={{ maxWidth: '800px' }}>
+      <Container className="py-4" style={{ maxWidth: '800px' }}>
         <Card className="shadow-sm">
           <Card.Body className="p-5">
-            <h2 className="text-center mb-4" style={{ color: '#5a287d', fontWeight: '600' }}>
+            <h2
+              className="text-center mb-4"
+              style={{ color: '#5a287d', fontWeight: '600' }}
+            >
               부동산 토큰 발행
             </h2>
-            
-            <ProgressBar 
-              now={(currentPage / 3) * 100} 
+
+            <ProgressBar
+              now={(currentPage / 3) * 100}
               className="mb-4"
               variant="info"
             />
 
-            <Form onSubmit={handleSubmit} className="mx-auto" style={{ maxWidth: '700px' }}>
+            <Form
+              onSubmit={handleSubmit}
+              className="mx-auto"
+              style={{ maxWidth: '700px' }}
+            >
               {currentPage === 1 && (
                 <PropertyContents
                   formData={formData}
                   setFormData={setFormData}
-                  // setHasBuildingInfo={setHasBuildingInfo}
                 />
               )}
               {currentPage === 2 && (
@@ -216,10 +223,17 @@ const PropertyCreate = () => {
                         id="legalNotice"
                         checked={formData.legalNotice}
                         onChange={(e) =>
-                          setFormData({ ...formData, legalNotice: e.target.checked })
+                          setFormData({
+                            ...formData,
+                            legalNotice: e.target.checked,
+                          })
                         }
                       />
-                      <Form.Label htmlFor="legalNotice" className="mb-0" style={{ color: '#495057' }}>
+                      <Form.Label
+                        htmlFor="legalNotice"
+                        className="mb-0"
+                        style={{ color: '#495057' }}
+                      >
                         이용약관에 동의합니다
                       </Form.Label>
                     </div>

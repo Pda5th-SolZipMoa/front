@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, ProgressBar, Modal } from 'react-bootstrap';
 import { ethers } from 'ethers';
+import axios from 'axios';
 import myToken from '../../../hooks/myToken.json';
 
 const contractAddress = import.meta.env.VITE_APP_CONTRACT_ADDRESS;
@@ -8,314 +9,259 @@ const contractAddress = import.meta.env.VITE_APP_CONTRACT_ADDRESS;
 export default function DetailBox({ buildingData, selectedDetail }) {
   const [subscriptionAmount, setSubscriptionAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [tokenDetails, setTokenDetails] = useState(null);
+  const [totalTokens] = useState(
+    parseInt(selectedDetail?.['토큰발행'], 10) || 0
+  );
   const [remainingTokens, setRemainingTokens] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [ethCost, setEthCost] = useState(0);
   const [krwCost, setKrwCost] = useState(0);
 
-  const pricePerTokenKRW = 1000000; // 토큰 당 가격 더미 데이터
-  const ethToKrwRate = 5100000; // 1 ETH = 510만원
-  const pricePerTokenETH = pricePerTokenKRW / ethToKrwRate; // 1 토큰당 가격 (ETH 단위)
+  console.log(selectedDetail);
 
-  const pricePerTokenETHInWei = ethers.parseUnits(
-    pricePerTokenETH.toString(),
-    'ether'
-  );
-
-  const buildingInfo = buildingData?.['건물정보'];
-  const buildingCode = buildingInfo?.['빌딩코드'] || '데이터 없음';
-  const floor = selectedDetail?.['층수'];
-  const building_token_id = `${buildingCode}_${floor}`;
-
+  // 전체 청약 토큰 대비 남아 있는 토큰 수 계산
   useEffect(() => {
-    if (building_token_id) {
-      handleGetTokenDetails();
-    }
-  }, [building_token_id]);
-
-  const handleGetTokenDetails = async () => {
-    try {
-      setIsLoading(true);
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(
-        contractAddress,
-        myToken.abi,
-        signer
-      );
-
-      const [exists, property] = await contract.getTokenDetails(
-        building_token_id
-      );
-
-      if (exists) {
-        setTokenDetails({
-          tokenId: property.tokenId,
-          totalSupply: property.totalSupply.toString(),
-          remainingTokens: property.remainingTokens.toString(),
-        });
-        setRemainingTokens(property.remainingTokens.toString());
-      } else {
-        setTokenDetails(null);
+    const fetchRemainingTokens = async () => {
+      console.log('실행');
+      try {
+        const response = await axios.get(
+          `/api/subscriptions/tokens/${selectedDetail?.['id']}`
+        );
+        setRemainingTokens(totalTokens - response.data.total_quantity);
+      } catch (error) {
+        console.error('Error fetching remaining tokens:', error);
       }
-    } catch (error) {
-      console.error('토큰 조회 중 오류:', error);
-      setTokenDetails(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  const subscribe = async () => {
-    try {
-      if (!window.ethereum) {
-        throw new Error('MetaMask가 설치되어 있지 않습니다.');
-      }
+    fetchRemainingTokens();
+  }, []);
 
-      if (!subscriptionAmount || subscriptionAmount <= 0) {
-        alert('올바른 청약 수량을 입력하세요.');
-        return;
-      }
+  console.log(selectedDetail);
+  const pricePerTokenKRW = parseInt(selectedDetail?.['토큰가격'], 10) * 10000;
+  const ethToKrwRate = 5100000; // 1 ETH = 510만원
+  const pricePerTokenETH = pricePerTokenKRW / ethToKrwRate;
 
-      setIsLoading(true);
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(
-        contractAddress,
-        myToken.abi,
-        signer
-      );
+  const subscriptionStart = selectedDetail?.['청약시작일'] || '2024-01-01';
+  let subscriptionEnd = selectedDetail?.['청약종료일'] || '2024-01-10';
 
-      const totalCostETH = subscriptionAmount * pricePerTokenETH;
-      const totalCostInWei = ethers.parseUnits(
-        totalCostETH.toString(),
-        'ether'
-      );
-      const totalCostInKRW = totalCostETH * ethToKrwRate;
+  subscriptionEnd = `${subscriptionEnd} 23:59`;
 
-      setEthCost(totalCostETH);
-      setKrwCost(totalCostInKRW);
+  const progress = ((remainingTokens / totalTokens) * 100).toFixed(2);
 
-      setShowModal(true);
-
-      // 트랜잭션 실행
-      const tx = await contract.subscribe(
-        building_token_id,
-        parseInt(subscriptionAmount, 10),
-        pricePerTokenETHInWei,
-        {
-          value: totalCostInWei,
-          gasLimit: 500000,
-        }
-      );
-
-      await tx.wait(); // 트랜잭션 완료까지 기다림
-
-      alert('청약 신청이 성공적으로 완료되었습니다!');
-      setShowModal(false); // 트랜잭션 완료 후 팝업 닫기
-    } catch (error) {
-      console.error('청약 신청 중 오류:', error);
-      alert('청약 신청 중 오류가 발생했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /* 청약 마감 함수 
-
-  const closeSubscription = async () => {
-    try {
-      if (!window.ethereum) {
-        throw new Error('MetaMask가 설치되어 있지 않습니다.');
-      }
-
-      setIsLoading(true);
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(
-        contractAddress,
-        myToken.abi,
-        signer
-      );
-
-      const tx = await contract.closeSubscription(building_token_id);
-      await tx.wait();
-
-      alert('청약이 성공적으로 마감되었습니다!');
-    } catch (error) {
-      console.error('청약 마감 중 오류:', error);
-      alert('청약 마감 중 오류가 발생했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  */
-
-  // Close modal
   const handleCloseModal = () => setShowModal(false);
 
-  if (!buildingData || !selectedDetail) {
-    return <div>로딩 중...</div>;
-  }
+  const subscribe = async () => {
+    const amount = parseInt(subscriptionAmount, 10);
 
-  // 건물명
-  const buildingName = buildingData['건물정보']['건물명'] || '건물명 없음';
+    if (!amount || amount <= 0) {
+      alert('올바른 청약 수량을 입력하세요.');
+      return;
+    }
 
-  // 제목 생성
-  const title = `${buildingName} - ${selectedDetail['집 평수']}평/${selectedDetail['층수']}층`;
+    if (amount > remainingTokens) {
+      alert('남은 토큰 수량보다 많은 수량을 청약할 수 없습니다.');
+      return;
+    }
 
+    const totalCostETH = amount * pricePerTokenETH;
+    const totalCostInKRW = totalCostETH * ethToKrwRate;
 
-  // 필요한 데이터 추출
-  const tokenSupply = selectedDetail['토큰발행'] || 0;
-  const tokenCost = selectedDetail['토큰가격'] || 0;
-  const publicOfferingAmount = (tokenSupply * tokenCost) || '데이터 없음';
-  const subscriptionPeriod = selectedDetail['청약기간'] || '데이터 없음';
-  const remainingPrice = buildingData['건물정보']['잔여가'] || '데이터 없음'; // 필요에 따라 수정
+    const totalCostInWei = ethers.parseUnits(totalCostETH.toString(), 'ether');
+
+    setEthCost(totalCostETH);
+    setKrwCost(totalCostInKRW);
+
+    try {
+      console.log('청약 요청 시작');
+
+      // API 요청 보내기
+      const response = await fetch('/api/subscriptions/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          property_detail_id: selectedDetail?.['id'],
+          quantity: amount,
+          tradeable_tokens: amount,
+          buy_price: pricePerTokenKRW,
+          subscription_end_date: subscriptionEnd,
+        }),
+      });
+
+      console.log('백엔드 응답:', response);
+
+      if (!response.ok) {
+        throw new Error(
+          `API 호출 실패: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const result = await response.json();
+      console.log('백엔드 처리 결과:', result);
+
+      alert('청약 신청이 성공적으로 완료되었습니다!');
+      setRemainingTokens((prev) => prev - amount);
+      setShowModal(true);
+    } catch (error) {
+      console.error('청약 신청 중 오류:', error);
+      alert('청약 신청 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const buildingName = buildingData?.['건물정보']?.['건물명'] || '건물명 없음';
+  const title = `${buildingName} - ${selectedDetail?.['집 평수']}평/${selectedDetail?.['층수']}층`;
 
   return (
-    <div className="bg-white p-4 rounded shadow-sm">
-      <h5 className="mb-3">{buildingInfo?.['건물명'] || '건물명 없음'}</h5>
-      <div className="bg-success-subtle p-2 rounded mb-3">
-        <small className="text-success">신한투자증권이 발행함.</small>
-      </div>
-      <div className="mb-3">
-        <div className="mb-3">
-          <ProgressBar
-            now={(remainingTokens / tokenDetails?.totalSupply) * 100}
-            label={`${remainingTokens}/${tokenDetails?.totalSupply} 남음`}
-            className="custom-progress-bar"
-          />
+    <div className="card border-0 shadow-sm">
+      <div className="card-body p-4" style={{ backgroundColor: '#F8F7FF' }}>
+        <h4 className="card-title text-center mb-3 fw-bold">{title}</h4>
+        <p className="text-center text-muted small mb-4">
+          청약 기간: {subscriptionStart} ~ {subscriptionEnd}
+        </p>
+
+        <ProgressBar
+          now={progress}
+          label={`${remainingTokens}/${totalTokens}`}
+          className="mb-4"
+          style={{
+            height: '20px',
+            backgroundColor: '#E8E7FF',
+            borderRadius: '10px',
+          }}
+        />
+
+        <div
+          className="mb-4 p-3 rounded-3 shadow-sm"
+          style={{ backgroundColor: '#fff' }}
+        >
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <span className="text-muted">토큰당 가격</span>
+            <span className="fw-bold" style={{ color: '#7F3FFC' }}>
+              {pricePerTokenKRW.toLocaleString()} 원
+            </span>
+          </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <span className="text-muted">총 발행된 토큰 개수</span>
+            <span className="fw-bold" style={{ color: '#7F3FFC' }}>
+              {totalTokens.toLocaleString()} 개
+            </span>
+          </div>
         </div>
 
+        {/* 청약 입력 */}
+        <Form.Control
+          type="number"
+          placeholder="청약 수량 입력"
+          value={subscriptionAmount}
+          onChange={(e) => setSubscriptionAmount(e.target.value)}
+          className="mb-3 text-center fw-bold border-0 shadow-sm"
+          style={{ backgroundColor: '#fff' }}
+        />
+        <Button
+          className="w-100 py-2 fw-bold border-0 shadow-sm"
+          onClick={subscribe}
+          disabled={isLoading || remainingTokens <= 0}
+          style={{ backgroundColor: '#7F3FFC', borderRadius: '8px' }}
+        >
+          {isLoading ? '청약 진행 중...' : '청약하기'}
+        </Button>
+
+        <Modal show={showModal} onHide={handleCloseModal} centered>
+          <Modal.Header closeButton className="custom-modal-header">
+            <Modal.Title className="fw-bold">청약 신청 완료</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="custom-modal-body">
+            <p>
+              <strong>청약 수량:</strong> {subscriptionAmount} 개
+            </p>
+            <p>
+              <strong>이더리움 (ETH):</strong> {ethCost.toFixed(6)} ETH
+            </p>
+            <p>
+              <strong>원화 (KRW):</strong> {krwCost.toLocaleString()} 원
+            </p>
+          </Modal.Body>
+          <Modal.Footer className="custom-modal-footer">
+            <Button
+              variant="secondary"
+              onClick={handleCloseModal}
+              className="custom-button"
+            >
+              닫기
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
         <style jsx>{`
-          .custom-progress-bar .progress-bar {
-            background-color: #cc8eff; /* 보라색 배경 설정 */
+          .custom-modal .modal-content {
+            background: linear-gradient(
+              145deg,
+              #e3dff5,
+              #ffffff
+            ); /* Gradient background */
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+            animation: scaleFadeIn 0.4s ease-out; /* Smooth animation */
+          }
+
+          .custom-modal-header {
+            background-color: #845ef7; /* Soft purple */
+            color: white;
+            padding: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 2px solid #6c47d6;
+          }
+
+          .custom-modal-body {
+            padding: 10px 10px;
+            font-size: 1rem;
+            color: #333;
+          }
+
+          .custom-modal-body p {
+            margin: 12px 0;
+            font-weight: 500;
+            color: #4b0082; /* Dark purple */
+          }
+
+          .custom-modal-footer {
+            display: flex;
+            justify-content: center;
+            padding: 7px;
+          }
+
+          .custom-button {
+            background-color: #845ef7; /* Purple */
+            color: white;
+            font-weight: 600;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Button shadow */
+          }
+
+          .custom-button:hover {
+            background-color: #6c47d6; /* Darker purple */
+            transform: scale(1.05); /* Slightly enlarge */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+          }
+
+          /* Add smooth scale and fade animation */
+          @keyframes scaleFadeIn {
+            0% {
+              opacity: 0;
+              transform: scale(0.9);
+            }
+            100% {
+              opacity: 1;
+              transform: scale(1);
+            }
           }
         `}</style>
       </div>
-      <Form.Control
-        type="number"
-        placeholder="청약 수량 입력"
-        value={subscriptionAmount}
-        onChange={(e) => setSubscriptionAmount(e.target.value)}
-        className="mb-3"
-      />
-      <Button
-        className="w-100 mb-3"
-        style={{ backgroundColor: '#6f41c1', borderColor: '#6f41c1' }}
-        onClick={subscribe}
-        disabled={isLoading}
-      >
-        {isLoading ? '청약 신청 중...' : '청약하기'}
-      </Button>
-      {/*
-      <Button
-        className="w-100 mb-3"
-        style={{ backgroundColor: '#DC3545', borderColor: '#DC3545' }}
-        disabled={isLoading}
-      >
-        {isLoading ? '청약 마감 중...' : '청약 마감하기'}
-      </Button>
-  */}
-      <div className="mb-3">
-        {tokenDetails ? <ul></ul> : <p>보유한 토큰이 없습니다.</p>}
-      </div>
-
-      <Modal
-        show={showModal}
-        onHide={handleCloseModal}
-        centered
-        className="custom-modal"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            청약 신청 시, 다음과 같은 금액이 이더리움으로 차감됩니다.
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            <strong>이더리움 (ETH):</strong> {ethCost} ETH
-          </p>
-          <p>
-            <strong>원화 (KRW):</strong> {krwCost.toLocaleString()} 원
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            닫기
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <style jsx>{`
-        .custom-modal .modal-content {
-          background-color: #f3f0ff; /* Light purple background */
-          border-radius: 15px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .custom-modal .modal-header {
-          background-color: #6f42c1; /* Purple header */
-          color: white;
-          border-bottom: 2px solid #5a32a3; /* Darker purple bottom border */
-          border-radius: 15px 15px 0 0;
-        }
-
-        .custom-modal .modal-header .modal-title {
-          font-size: 1rem;
-          font-weight: 600;
-        }
-
-        .custom-modal .modal-body {
-          padding: 20px 10px;
-          font-size: 1rem;
-        }
-
-        .custom-modal .modal-body p {
-          margin: 10px 0;
-          font-size: 1rem;
-          font-weight: 500;
-          color: #4b0082; /* Dark purple text */
-        }
-
-        .custom-modal .modal-footer {
-          display: flex;
-          justify-content: center;
-          padding-top: 15px;
-        }
-
-        .custom-modal .modal-footer button {
-          background-color: #9b59b6; /* Purple button */
-          color: white;
-          font-weight: 500;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          transition: background-color 0.3s ease;
-        }
-
-        .custom-modal .modal-footer button:hover {
-          background-color: #8e44ad; /* Darker purple on hover */
-        }
-
-        /* Adding animation */
-        .custom-modal .modal-content {
-          animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

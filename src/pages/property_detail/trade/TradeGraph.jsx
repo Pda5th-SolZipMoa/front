@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   LineChart,
   Line,
@@ -10,48 +10,18 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import axios from 'axios';
 import { useTradeContext } from './TradeContext';
 
 export default function TradeGraph() {
-  const { id: propertyId } = useTradeContext(); // Context에서 건물 ID 가져오기
-  const [data, setData] = useState([]); // 데이터를 저장할 상태
+  const { data, loading, error } = useTradeContext(); // 데이터 가져오기
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `/api/properties/${propertyId}/history`
-        );
-        const history = response.data.history;
+  if (loading) {
+    return <div>데이터 로딩 중...</div>;
+  }
 
-        // 날짜를 기준으로 데이터를 정렬
-        const sortedHistory = history.sort(
-          (a, b) => new Date(a.recorded_date) - new Date(b.recorded_date)
-        );
-
-        // 필요한 필드만 포함한 데이터로 변환
-        const combinedData = sortedHistory.map((item) => ({
-          date: item.recorded_date,
-          time: new Date(item.recorded_date).toLocaleTimeString('ko-KR', {
-            hour: '2-digit',
-            minute: '2-digit',
-          }), // 시간 정보만 추출
-          price: item.price,
-          volume: item.quantity,
-        }));
-
-        setData(combinedData); // 정제된 데이터를 상태에 저장
-      } catch (err) {
-        console.error(
-          '데이터 가져오기 실패:',
-          err.response?.data?.detail || err.message
-        );
-      }
-    };
-
-    fetchData(); // 데이터 요청 함수 실행
-  }, [propertyId]);
+  if (error) {
+    return <div>오류가 발생했습니다: {error}</div>;
+  }
 
   return (
     <div className="border rounded p-3 bg-white h-100">
@@ -59,25 +29,24 @@ export default function TradeGraph() {
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
-          syncId="chart" // 아래 바 차트와 X축 동기화
+          syncId="chart"
           margin={{ top: 5, right: 30, left: 20, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />{' '}
-          {/* 격자선 */}
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="time"
             axisLine={false}
             tickLine={false}
-            tick={false} // X축 숨기기
+            tick={false}
             label={false}
           />
           <YAxis
             yAxisId="left"
-            domain={['dataMin - 1000', 'dataMax + 1000']} // Y축 범위 설정
+            domain={['dataMin - 1000', 'dataMax + 1000']}
             axisLine={false}
             tickLine={false}
             style={{ fontSize: '0.8rem' }}
-            tickFormatter={(value) => `${value.toLocaleString()}`} // 숫자 형식 지정
+            tickFormatter={(value) => `${value.toLocaleString()}`}
           />
           <Tooltip
             content={({ active, payload }) => {
@@ -92,7 +61,6 @@ export default function TradeGraph() {
                       padding: '10px',
                     }}
                   >
-                    {/* 툴팁에 날짜, 시간, 가격, 거래량 표시 */}
                     <p style={{ margin: 0 }}>
                       날짜: {new Date(date).toLocaleDateString('ko-KR')}
                     </p>
@@ -108,18 +76,18 @@ export default function TradeGraph() {
                   </div>
                 );
               }
-              return null; // 툴팁 숨김
+              return null;
             }}
           />
           <Line
             yAxisId="left"
-            type="linear" // 선을 직선으로 설정
+            type="linear"
             dataKey="price"
             name="가격"
-            stroke="#DF0101" // 선 색상(빨간색)
+            stroke="#DF0101"
             strokeWidth={2}
-            dot={false} // 데이터 점 제거
-            activeDot={false} // 활성 데이터 점 제거
+            dot={false}
+            activeDot={false}
           />
         </LineChart>
       </ResponsiveContainer>
@@ -137,7 +105,7 @@ export default function TradeGraph() {
       <ResponsiveContainer width="100%" height={150}>
         <BarChart
           data={data}
-          syncId="chart" // 위 라인 차트와 X축 동기화
+          syncId="chart"
           margin={{ top: 0, right: 30, left: 20, bottom: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -151,7 +119,7 @@ export default function TradeGraph() {
             axisLine={false}
             tickLine={false}
             style={{ fontSize: '0.8rem' }}
-            tickFormatter={(value) => `${value.toLocaleString()}개`} // 거래량 형식 지정
+            tickFormatter={(value) => `${value.toLocaleString()}개`}
           />
           <Tooltip
             content={({ active, payload }) => {
@@ -166,7 +134,6 @@ export default function TradeGraph() {
                       padding: '10px',
                     }}
                   >
-                    {/* 툴팁에 시간과 거래량 표시 */}
                     <p style={{ margin: 0 }}>
                       시간: {new Date(date).toLocaleTimeString('ko-KR')}
                     </p>

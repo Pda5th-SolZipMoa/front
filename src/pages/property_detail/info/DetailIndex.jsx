@@ -47,7 +47,7 @@ export default function PropertyDetail() {
               imageUrls = [imageUrls];
             }
             
-            const fullImageUrls = imageUrls.map((url) => `http://localhost:8000/${url}`);
+            const fullImageUrls = imageUrls.map((url) => `http://3.37.185.91:8000/${url}`);
             setSelectedImage(fullImageUrls[0]);
             setThumbnails(fullImageUrls);
           } else {
@@ -206,11 +206,6 @@ export default function PropertyDetail() {
           {/* Right Column - Details */}
           <Col md={5}>
             <DetailBox buildingData={buildingData} selectedDetail={selectedDetail} />
-            <Button className="w-10 mb-3" style={{ backgroundColor: '#6B21A8', borderColor: '#6B21A8' }}
-              onClick={handleApply} // 클릭 핸들러 연결
-            >
-              청약하기
-            </Button>
           </Col>
 
         </Row>

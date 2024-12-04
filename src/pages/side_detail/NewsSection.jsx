@@ -3,8 +3,8 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { Card, Button, Spinner, Alert, Container, Row, Col } from "react-bootstrap";
 import { ArrowRight } from 'react-bootstrap-icons';
-// import "bootstrap/dist/css/bootstrap.min.css";
 import "./NewsSection.css"; // We'll create this file for custom styles
+
 
 function NewsSection() {
   const [newsItems, setNewsItems] = useState([]);
@@ -36,7 +36,7 @@ function NewsSection() {
     const searchQuery = buildingName || "default";
     window.open(`https://search.daum.net/search?w=news&q=${encodeURIComponent(searchQuery)}`, '_blank');
   };
-
+  
   return (
     <Container className="mt-5">
       {/* Always show the title */}

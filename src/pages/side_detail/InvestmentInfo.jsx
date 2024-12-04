@@ -16,7 +16,6 @@ function InvestmentInfo() {
   };
 
   return (
-    
     <Container className="mb-1">
       <h4 className="card-title h5" style={{color:"#6C63FF !important"}}>최근 거래된 매물</h4>
       <Card className="investment-card mt-2">
