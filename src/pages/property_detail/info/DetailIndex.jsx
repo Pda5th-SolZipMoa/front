@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams,useNavigate,useLocation } from 'react-router-dom';
-import { Container, Row, Col, Image,Button } from 'react-bootstrap';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 import ScheduleButton from './ScheduleButton';
 import DetailBox from './DetailBox';
 import DetailCategory from './DetailCategory';
 import Header from '../../../components/header/Header';
 import axios from 'axios';
-
 
 export default function PropertyDetail() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -19,8 +18,6 @@ export default function PropertyDetail() {
 
   const navigate = useNavigate(); // useNavigate 훅 추가
   const location = useLocation();
-  
-
 
   // 추가된 상태
   const [selectedDetail, setSelectedDetail] = useState(null);
@@ -32,12 +29,14 @@ export default function PropertyDetail() {
   useEffect(() => {
     const fetchBuildingData = async () => {
       try {
-        const response = await axios.get(`/api/building-latest-transactions/${id}`);
+        const response = await axios.get(
+          `/api/building-latest-transactions/${id}`
+        );
 
         if (response.status === 200) {
           const data = response.data;
           setBuildingData(data);
-          
+
           // 이미지 URL 설정
           let imageUrls = data['건물정보']['건물사진'];
 
@@ -46,8 +45,10 @@ export default function PropertyDetail() {
             if (typeof imageUrls === 'string') {
               imageUrls = [imageUrls];
             }
-            
-            const fullImageUrls = imageUrls.map((url) => `http://3.37.185.91:8000/${url}`);
+
+            const fullImageUrls = imageUrls.map(
+              (url) => `http://3.37.185.91:8000/${url}`
+            );
             setSelectedImage(fullImageUrls[0]);
             setThumbnails(fullImageUrls);
           } else {
@@ -62,12 +63,14 @@ export default function PropertyDetail() {
             const firstDetail = propertyDetails[0];
             try {
               // 이미지 데이터 가져오기
-              const imageResponse = await axios.get(`/api/property-detail-images/${firstDetail.id}`);
+              const imageResponse = await axios.get(
+                `/api/property-detail-images/${firstDetail.id}`
+              );
               if (imageResponse.status === 200) {
                 const images = imageResponse.data['이미지URL'];
                 const detailWithImages = {
                   ...firstDetail,
-                  '이미지URL': images,
+                  이미지URL: images,
                 };
                 setSelectedDetail(detailWithImages);
               } else {
@@ -75,7 +78,10 @@ export default function PropertyDetail() {
                 setSelectedDetail(firstDetail);
               }
             } catch (error) {
-              console.error('이미지 데이터를 가져오는 중 오류가 발생했습니다.', error);
+              console.error(
+                '이미지 데이터를 가져오는 중 오류가 발생했습니다.',
+                error
+              );
               setSelectedDetail(firstDetail);
             }
           }
@@ -88,20 +94,22 @@ export default function PropertyDetail() {
         setLoading(false);
       }
     };
-    
+
     fetchBuildingData();
   }, [id]);
-  
+
   // 매물 선택 핸들러
   const handleSelectDetail = async (detail) => {
     try {
       // 이미지 데이터 가져오기
-      const imageResponse = await axios.get(`/api/property-detail-images/${detail.id}`);
+      const imageResponse = await axios.get(
+        `/api/property-detail-images/${detail.id}`
+      );
       if (imageResponse.status === 200) {
         const images = imageResponse.data['이미지URL'];
         const detailWithImages = {
           ...detail,
-          '이미지URL': images,
+          이미지URL: images,
         };
         setSelectedDetail(detailWithImages);
       } else {
@@ -114,8 +122,6 @@ export default function PropertyDetail() {
     }
     setShowModal(true);
   };
-  
-  
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -124,8 +130,18 @@ export default function PropertyDetail() {
   const handleSearch = (query) => {
     // 검색어에 따라 검색 결과를 설정하는 로직 추가
     const dummyResults = [
-      { name: '예제 위치 1', address: '서울특별시 중구 예제로 1', latitude: 37.5665, longitude: 126.978 },
-      { name: '예제 위치 2', address: '서울특별시 강남구 테헤란로 2', latitude: 37.498, longitude: 127.027 },
+      {
+        name: '예제 위치 1',
+        address: '서울특별시 중구 예제로 1',
+        latitude: 37.5665,
+        longitude: 126.978,
+      },
+      {
+        name: '예제 위치 2',
+        address: '서울특별시 강남구 테헤란로 2',
+        latitude: 37.498,
+        longitude: 127.027,
+      },
     ];
     setSearchResults(dummyResults.filter((item) => item.name.includes(query)));
   };
@@ -147,11 +163,11 @@ export default function PropertyDetail() {
     if (buildingData && buildingData['건물정보']) {
       // const buildingName = buildingData['건물정보']['건물명'];
       // const address = buildingData['건물정보']['주소'];
-      console.log(buildingData)
+      console.log(buildingData);
       // 데이터와 함께 새로운 경로로 이동
       navigate('/property_sidedetail', {
         state: {
-          buildingData
+          buildingData,
         },
       });
     } else {
@@ -159,9 +175,8 @@ export default function PropertyDetail() {
     }
   };
 
-  
   return (
-    <div style={{ backgroundColor: '#FAF8FF', minHeight: '100vh' }}>
+    <div>
       {/* Header 추가 */}
       <Header
         searchQuery={searchQuery}
@@ -205,9 +220,11 @@ export default function PropertyDetail() {
 
           {/* Right Column - Details */}
           <Col md={5}>
-            <DetailBox buildingData={buildingData} selectedDetail={selectedDetail} />
+            <DetailBox
+              buildingData={buildingData}
+              selectedDetail={selectedDetail}
+            />
           </Col>
-
         </Row>
 
         <DetailCategory

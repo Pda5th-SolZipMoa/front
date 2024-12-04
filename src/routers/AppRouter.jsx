@@ -26,7 +26,7 @@ const AppRouter = createBrowserRouter([
     element: <MyPage />,
   },
   {
-    path: '/property_detail/info/:id',
+    path: '/property_detail/info/:id/:roomId',
     element: <DetailIndex />,
   },
   {

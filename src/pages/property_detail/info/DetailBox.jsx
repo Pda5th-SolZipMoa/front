@@ -39,7 +39,7 @@ export default function DetailBox({ buildingData, selectedDetail }) {
   console.log(selectedDetail);
   const pricePerTokenKRW = parseInt(selectedDetail?.['토큰가격'], 10) * 10000;
   const ethToKrwRate = 5100000; // 1 ETH = 510만원
-  const pricePerTokenETH = pricePerTokenKRW / ethToKrwRate;
+  const pricePerTokenETH = Math.floor(pricePerTokenKRW / ethToKrwRate);
 
   const subscriptionStart = selectedDetail?.['청약시작일'] || '2024-01-01';
   let subscriptionEnd = selectedDetail?.['청약종료일'] || '2024-01-10';
@@ -126,10 +126,17 @@ export default function DetailBox({ buildingData, selectedDetail }) {
           className="mb-4"
           style={{
             height: '20px',
-            backgroundColor: '#E8E7FF',
             borderRadius: '10px',
           }}
-        />
+        >
+          <ProgressBar
+            now={progress}
+            style={{
+              backgroundColor: '#6c63ff',
+              backgroundImage: 'linear-gradient(to right, #6c63ff, #9a8bff)',
+            }}
+          />
+        </ProgressBar>
 
         <div
           className="mb-4 p-3 rounded-3 shadow-sm"

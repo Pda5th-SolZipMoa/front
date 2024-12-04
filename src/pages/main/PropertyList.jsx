@@ -108,6 +108,7 @@ const PropertyList = ({ moveToLocation, data, handleRoute, filter }) => {
     return 0;
   });
 
+  console.log(sortedData);
   return (
     <StyledCard>
       <Card.Body className="p-3">
@@ -122,16 +123,16 @@ const PropertyList = ({ moveToLocation, data, handleRoute, filter }) => {
               <button
                 style={{
                   display: 'inline-block',
-                  backgroundColor: '#6c63ff', // 보라색 배경
-                  color: '#fff', // 흰색 텍스트
-                  padding: '10px 10px', // 버튼 내부 여백
-                  border: 'none', // 테두리 제거
-                  borderRadius: '12px', // 둥근 모서리
-                  fontSize: '14px', // 텍스트 크기
-                  fontWeight: 'bold', // 텍스트 굵기
-                  cursor: 'pointer', // 마우스 포인터 변경
-                  textAlign: 'center', // 텍스트 중앙 정렬
-                  transition: 'background-color 0.3s', // 배경색 전환 효과
+                  backgroundColor: '#6c63ff',
+                  color: '#fff',
+                  padding: '10px 10px',
+                  border: 'none',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  transition: 'background-color 0.3s',
                 }}
                 onMouseEnter={(e) =>
                   (e.target.style.backgroundColor = '#5b54e3')
@@ -150,6 +151,7 @@ const PropertyList = ({ moveToLocation, data, handleRoute, filter }) => {
                 <PropertyCardWrapper key={index}>
                   <PropertyCard
                     id={property.id}
+                    address={property.address}
                     name={property.name}
                     image={property.photos[0]?.url}
                     price={property.price}

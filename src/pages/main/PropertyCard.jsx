@@ -70,6 +70,7 @@ const PropertyCard = ({
   name,
   image,
   price,
+  address,
   tokenSupply,
   tokenPrice,
   percentage,
@@ -82,8 +83,8 @@ const PropertyCard = ({
   const navigate = useNavigate();
   const percentageColor = percentage > 0 ? 'text-success' : 'text-danger';
   const fullImageUrls = `http://3.37.185.91:8000/${image}`;
-
   console.log(fullImageUrls);
+
   return (
     <Card
       onClick={() => {
@@ -106,17 +107,19 @@ const PropertyCard = ({
         </div>
         <Card.Text style={cardStyles.textGroup}>
           <div style={cardStyles.row}>
-            <span>공모 금액</span>
-            <span>{price} 억원</span>
+            <span>실거래가</span>
+            <span>{price} 만원</span>
           </div>
           <div style={cardStyles.row}>
-            <span>발행된 토큰 양</span>
-            <span>{tokenSupply} 개</span>
+            <span>주소</span>
+            <span>{address}</span>
           </div>
+          {/*
           <div style={cardStyles.row}>
             <span>토큰 당 가격</span>
             <span>{tokenPrice} 만원</span>
           </div>
+    */}
         </Card.Text>
         <div style={cardStyles.buttonContainer}>
           <Button
@@ -126,8 +129,7 @@ const PropertyCard = ({
               handleRoute(id);
             }}
           >
-            {status == '처'}
-            투자 상세 페이지로 이동 {`>`}
+            상세 페이지로 이동 {`>`}
           </Button>
         </div>
       </Card.Body>
