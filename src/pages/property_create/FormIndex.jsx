@@ -22,7 +22,7 @@ const PropertyCreate = () => {
     address: '',
     created_at: '',
     price: '',
-    owner_id: '',
+    // owner_id: '',
     building_code: '',
     platArea: '',
     bcRat: '',
