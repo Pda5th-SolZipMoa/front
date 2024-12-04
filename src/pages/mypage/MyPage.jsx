@@ -8,6 +8,7 @@ import MyAsset from './MyAsset';
 import Header from '../../components/header/Header';
 import { OwnershipProvider } from './OwnershipContext';
 import './MyPage.css';
+import SubscriptionRecords from './SubscriptionHistory';
 
 export default function MyPage() {
   const [activeTab, setActiveTab] = useState('보유자산');
@@ -38,6 +39,11 @@ export default function MyPage() {
                 미체결
               </Nav.Link>
             </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="청약" className="custom-tab">
+                청약
+              </Nav.Link>
+            </Nav.Item>
           </Nav>
           <Card className="shadow-sm card-custom">
             <Card.Body>
@@ -60,6 +66,7 @@ export default function MyPage() {
               )}
               {activeTab === '거래내역' && <OrderHistory />}
               {activeTab === '미체결' && <PendingOrders />}
+              {activeTab === '청약' && <SubscriptionRecords />}
             </Card.Body>
           </Card>
         </Container>
