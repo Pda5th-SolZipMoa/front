@@ -43,6 +43,8 @@ function InvestmentInfo() {
     return <p className="text-center py-5 text-danger">오류 발생: {error}</p>;
   }
 
+  console.log('해피', property);
+
   return (
     <Container className="mb-1">
       <h4 className="card-title h5" style={{ color: '#6C63FF' }}>
@@ -69,12 +71,21 @@ function InvestmentInfo() {
                     <td>
                       <Button
                         size="sm"
-                        className="rounded-pill px-3 custom-button"
+                        className={`rounded-pill px-3 custom-button ${
+                          room.subscription_status === 'pending'
+                            ? ''
+                            : 'btn-success'
+                        }`}
                         onClick={() =>
-                          handleInvestClick(room.room_id, 'pending')
+                          handleInvestClick(
+                            room.room_id,
+                            room.subscription_status
+                          )
                         }
                       >
-                        청약하기
+                        {room.subscription_status === 'pending'
+                          ? '청약하기'
+                          : '투자하기'}
                       </Button>
                     </td>
                   </tr>
