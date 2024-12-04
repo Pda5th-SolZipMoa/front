@@ -1,51 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Spinner } from 'react-bootstrap';
-import styled from 'styled-components';
+import { Card, Button } from 'react-bootstrap';
 
-const MapContainer = styled(Card)`
-  height: 100%;
-  border: none;
-  background-color: #f3f0ff;
-`;
-
-const MapControls = styled.div`
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-  display: flex;
-  gap: 10px;
-`;
-
-const StyledButton = styled.button`
-  background-color: ${(props) => (props.active ? '#6c63ff' : '#F3F0FF')};
-  border: 2px solid #6c63ff;
-  color: ${(props) => (props.active ? '#F3F0FF' : '#6c63ff')};
-  padding: 5px 20px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-
-  &:hover,
-  &:focus {
-    background-color: ${(props) => (props.active ? '#5b54e3' : '#e6e3ff')};
-    border-color: ${(props) => (props.active ? '#5b54e3' : '#b3acff')};
-    color: #f3f0ff;
-    outline: none;
-  }
-`;
-
-const Map = ({ data, filter, setFilter }) => {
-  console.log(filter);
-  const [loading, setLoading] = useState(false);
-  const [map, setMap] = useState(null);
-  const [buildingMarkers, setBuildingMarkers] = useState([]);
+const Map = ({ keyword, onSearchResults, selectedLocation, data }) => {
+  const [loading, setLoading] = useState(true);
+  const [map, setMap] = useState(null); // Kakao Map 객체
+  const [buildingMarkers, setBuildingMarkers] = useState([]); // 빌딩 마커 배열
+  const [searchMarker, setSearchMarker] = useState(null); // 현재 선택된 검색 마커
 
   const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
 
-  const mapMarkerImage = '/map_apt_marker.png';
+  const mapMarkerImage = '/map_apt_marker.png'; // 커스텀 마커 이미지
+  const searchMarkerImage = '/map_marker.png'; // 검색 마커 이미지
 
+  useEffect(() => {
+    const initializeMap = async () => {
+      // 지도 초기화 완료 확인
+      if (!map || data.length === 0) return;
+      // 마커 추가
+      addAllMarkers(data);
+    };
+    initializeMap();
+  }, [map, data]);
+
+  // Kakao Maps 스크립트 로드
   useEffect(() => {
     const loadMapScript = () => {
       const script = document.createElement('script');
@@ -74,24 +51,34 @@ const Map = ({ data, filter, setFilter }) => {
       };
     };
 
+    setLoading(false);
     loadMapScript();
   }, []);
 
-  const clearMarkers = () => {
-    buildingMarkers.forEach(({ marker, overlay }) => {
-      if (marker) marker.setMap(null);
-      if (overlay) overlay.setMap(null);
-    });
+  // 모든 빌딩 마커 제거
+  const clearBuildingMarkers = () => {
+    buildingMarkers.forEach((marker) => marker.setMap(null));
     setBuildingMarkers([]);
   };
 
-  const addMarker = ({ latitude, longitude, price }) => {
-    if (!map) return null;
+  // 검색 마커 제거
+  const clearSearchMarker = () => {
+    if (searchMarker) {
+      searchMarker.setMap(null);
+      setSearchMarker(null);
+    }
+  };
+
+  // 단일 마커 추가
+  const addMarker = ({ latitude, longitude, type, price }) => {
+    if (!map) return;
 
     const position = new window.kakao.maps.LatLng(latitude, longitude);
 
+    const markerImageSrc =
+      type === 'search' ? searchMarkerImage : mapMarkerImage;
     const markerImage = new window.kakao.maps.MarkerImage(
-      mapMarkerImage,
+      markerImageSrc,
       new window.kakao.maps.Size(40, 40),
       { offset: new window.kakao.maps.Point(20, 40) }
     );
@@ -101,91 +88,191 @@ const Map = ({ data, filter, setFilter }) => {
       image: markerImage,
     });
 
+    // 마커 표시
     marker.setMap(map);
 
-    let overlay = null;
+    // 가격 오버레이 추가
     if (price) {
-      const overlayContent = `
-        <div style="
-          background-color: #AE70D0;
-          color: #FFF;
-          padding: 10px;
-          border-radius: 5px;
-          font-size: 14px;
-          text-align: center;
-          box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
-          margin-bottom: 25px;
-        ">
-          <div style="font-weight: bold;">실 거래가</div>
-          <div>${(price / 10000).toLocaleString()}억 원</div>
-        </div>
+      const content = `
+      <div
+  style="
+    background-color: #6c63ff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 50px;
+    color: white;
+  "
+>
+  <div style="font-weight: bold;">실 거래가</div>
+  <div>${(price / 10000).toLocaleString()}억 원</div>
+</div>
       `;
 
-      overlay = new window.kakao.maps.CustomOverlay({
-        content: overlayContent,
+      const overlay = new window.kakao.maps.CustomOverlay({
+        map: map,
         position: position,
-        yAnchor: 1.2,
-        zIndex: 1, // 오버레이가 마커보다 위에 표시되도록 설정
+        content: content,
+        yAnchor: 1,
+        zIndex: 10,
       });
 
       overlay.setMap(map);
     }
 
-    return { marker, overlay };
+    // 상태 업데이트
+    if (type === 'building') {
+      setBuildingMarkers((prevMarkers) => [...prevMarkers, marker]);
+    } else if (type === 'search') {
+      clearSearchMarker(); // 이전 검색 마커 제거
+      setSearchMarker(marker); // 새 검색 마커 저장
+    }
   };
 
+  // 모든 빌딩 마커 추가
   const addAllMarkers = (buildings) => {
-    const newMarkers = buildings.map((building) =>
+    buildings.forEach((building) => {
       addMarker({
         latitude: building.lat,
         longitude: building.lng,
         price: building.price,
-      })
-    );
-    setBuildingMarkers(newMarkers);
+        type: 'building', // 빌딩 마커
+      });
+    });
   };
 
+  // 현 위치로 이동
+  const moveToCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation을 지원하지 않는 브라우저입니다.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+
+        const positionLatLng = new window.kakao.maps.LatLng(
+          latitude,
+          longitude
+        );
+        map.setCenter(positionLatLng);
+        map.setLevel(4);
+
+        addMarker({
+          latitude,
+          longitude,
+          type: 'search',
+        });
+      },
+      (error) => {
+        console.error('Error getting current location:', error);
+        alert('현재 위치를 가져올 수 없습니다.');
+      }
+    );
+  };
+
+  // 선택된 장소 이동 및 검색 마커 추가
   useEffect(() => {
-    if (!map || !data) return;
+    if (selectedLocation) {
+      addMarker({
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+        type: 'search', // 검색 마커
+      });
 
-    clearMarkers();
+      // 지도 중심 이동
+      const position = new window.kakao.maps.LatLng(
+        selectedLocation.latitude,
+        selectedLocation.longitude
+      );
+      map.setCenter(position);
+      map.setLevel(4);
+    }
+  }, [selectedLocation]);
 
-    const filteredData = data.filter((item) => {
-      if (filter === '전체') return true;
-      if (filter === '청약') return item.status === 'pending';
-      if (filter === '투자') return item.status === 'fulfilled';
-      return false;
-    });
+  // 데이터 변경 시 초기 빌딩 마커 설정
+  useEffect(() => {
+    if (data && data.length > 0) {
+      addAllMarkers(data);
+    }
+  }, [data]);
 
-    addAllMarkers(filteredData);
-  }, [map, data, filter]);
+  // 키워드 검색 시 처리
+  useEffect(() => {
+    if (keyword && map) {
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(keyword, (results, status) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          const formattedResults = results.map((result) => ({
+            name: result.place_name,
+            address: result.address_name,
+            latitude: parseFloat(result.y),
+            longitude: parseFloat(result.x),
+          }));
+          map.setLevel(4);
+          onSearchResults(formattedResults); // 부모 컴포넌트로 검색 결과 전달
+        } else {
+          console.error('검색 결과가 없습니다.');
+          onSearchResults([]); // 검색 결과 없음 처리
+        }
+      });
+    }
+  }, [keyword, map]);
 
   return (
-    <MapContainer>
+    <Card className="mb-4" style={{ height: '100%', border: 'none' }}>
       {loading ? (
-        <div className="d-flex align-items-center justify-content-center h-100">
-          <Spinner animation="border" variant="primary" />
-          <h5>지도를 불러오는 중입니다...</h5>
+        <div
+          className="text-center"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+          }}
+        >
+          <div>
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <h5>지도를 불러오는 중입니다...</h5>
+          </div>
         </div>
       ) : (
         <div style={{ position: 'relative', height: '100%' }}>
-          {/*
-          <MapControls>
-            {['전체', '청약', '투자'].map((btnFilter) => (
-              <StyledButton
-                key={btnFilter}
-                active={filter === btnFilter}
-                onClick={() => setFilter(btnFilter)}
-              >
-                {btnFilter}
-              </StyledButton>
-            ))}
-          </MapControls>
-            */}
-          <div id="map" style={{ width: '100%', height: '100%' }}></div>
+          {/* 지도 영역 */}
+          <div
+            id="map"
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+          ></div>
+
+          {/* 위치 이동 버튼 */}
+          <Button
+            variant="primary"
+            style={{
+              position: 'absolute',
+              bottom: '20px',
+              right: '20px',
+              zIndex: 1000,
+              background:
+                'linear-gradient(117deg, #AE70D0 7.71%, #B690EE 38.78%, #F68EA3 66.59%)',
+              border: 'none',
+              color: '#fff',
+            }}
+            onClick={moveToCurrentLocation}
+          >
+            현 위치로 이동
+          </Button>
         </div>
       )}
-    </MapContainer>
+    </Card>
   );
 };
 
