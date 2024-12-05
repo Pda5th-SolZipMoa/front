@@ -108,7 +108,7 @@ const PropertyCard = ({
         <Card.Text style={cardStyles.textGroup}>
           <div style={cardStyles.row}>
             <span>실거래가</span>
-            <span>{price} 만원</span>
+            <span>{price/10000} 억원</span>
           </div>
           <div style={cardStyles.row}>
             <span>주소</span>

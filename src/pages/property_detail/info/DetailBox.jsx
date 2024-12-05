@@ -209,7 +209,7 @@ export default function DetailBox({ buildingData, selectedDetail }) {
         >
           {isLoading ? '청약 진행 중...' : '청약하기'}
         </Button>
-
+        {/*
         <Modal show={showModal} onHide={handleCloseModal} centered>
           <Modal.Header closeButton className="custom-modal-header">
             <Modal.Title className="fw-bold">청약 신청 완료</Modal.Title>
@@ -235,6 +235,7 @@ export default function DetailBox({ buildingData, selectedDetail }) {
             </Button>
           </Modal.Footer>
         </Modal>
+          */}
 
         <style jsx>{`
           .custom-modal .modal-content {
