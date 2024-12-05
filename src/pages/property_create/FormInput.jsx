@@ -11,6 +11,7 @@ export const PropertyInput = ({
   type = 'text',
   suffix,
   readOnly,
+  onBlur,
 }) => {
   return (
     <Form.Group className="property-input">
@@ -23,6 +24,7 @@ export const PropertyInput = ({
           onChange={onChange}
           onClick={onClick}
           readOnly={readOnly}
+          onBlur={onBlur}
         />
         {suffix && (
           <InputGroup.Text>

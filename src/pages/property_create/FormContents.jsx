@@ -157,9 +157,18 @@ export const PropertyContents = ({ formData, setFormData }) => {
           type="number"
           placeholder="금액을 입력하세요"
           value={formData.price}
-          onChange={(e) =>
-            setFormData({ ...formData, price: e.target.value })
-          }
+          onChange={(e) => {
+            setFormData({ ...formData, price: e.target.value });
+          }}
+          onBlur={(e) => {
+            const value = e.target.value;
+            const numericValue = Number(value);
+
+            if (isNaN(numericValue) || numericValue <= 0) {
+              alert('매매 거래가는 0보다 큰 숫자를 입력해야 합니다.');
+              setFormData({ ...formData, price: '' });
+            }
+          }}
           suffix="만원"
         />
 
@@ -168,9 +177,18 @@ export const PropertyContents = ({ formData, setFormData }) => {
           type="number"
           placeholder="발행 수량을 입력하세요"
           value={formData.token_supply}
-          onChange={(e) =>
-            setFormData({ ...formData, token_supply: e.target.value })
-          }
+          onChange={(e) => {
+            setFormData({ ...formData, token_supply: e.target.value });
+          }}
+          onBlur={(e) => {
+            const value = e.target.value;
+            const numericValue = Number(value);
+
+            if (isNaN(numericValue) || numericValue <= 0) {
+              alert('발행수량은 0보다 큰 숫자를 입력해야 합니다.');
+              setFormData({ ...formData, token_supply: '' });
+            }
+          }}
           suffix="토큰"
         />
 
@@ -179,10 +197,19 @@ export const PropertyContents = ({ formData, setFormData }) => {
           type="number"
           placeholder="토큰 당 가격을 입력하세요"
           value={formData.token_cost}
-          onChange={(e) =>
-            setFormData({ ...formData, token_cost: e.target.value })
-          }
-          suffix="만원"
+          onChange={(e) => {
+            setFormData({ ...formData, token_cost: e.target.value });
+          }}
+          onBlur={(e) => {
+            const value = e.target.value;
+            const numericValue = Number(value);
+
+            if (isNaN(numericValue) || numericValue <= 0) {
+              alert('토큰 당 가격은 0보다 큰 숫자를 입력해야 합니다.');
+              setFormData({ ...formData, token_cost: '' });
+            }
+          }}
+          suffix="원"
         />
 
         <div className="mb-3">
