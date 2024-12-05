@@ -67,7 +67,7 @@ export default function DetailBox({ buildingData, selectedDetail }) {
   }, [roomId, totalTokens]); // roomId 또는 totalTokens가 변경될 때 실행
 
   console.log(selectedDetail);
-  const pricePerTokenKRW = tokenCost * 10000;
+  const pricePerTokenKRW = tokenCost;
   const ethToKrwRate = 5100000; // 1 ETH = 510만원
   const pricePerTokenETH = Math.floor(pricePerTokenKRW / ethToKrwRate);
 
