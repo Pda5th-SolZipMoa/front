@@ -42,48 +42,6 @@ const PropertyCreate = () => {
     // period: '',
   });
 
-  const getProvider = async () => {
-    if (!window.ethereum) {
-      alert('MetaMask가 설치되어 있지 않습니다.');
-      return null;
-    }
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-    return new ethers.BrowserProvider(window.ethereum);
-  };
-
-  // 토큰 발행 함수
-  const mintToken = async () => {
-    try {
-      const { token_supply, building_code, detail_floor } = formData;
-      const provider = await getProvider();
-      if (!provider) return;
-      console.log(building_code);
-
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(
-        contractAddress,
-        myToken.abi,
-        signer
-      );
-
-      const tx = await contract.mintToken(
-        parseInt(token_supply, 10),
-        building_code,
-        parseInt(detail_floor, 10),
-        {
-          gasLimit: 500000,
-        }
-      );
-
-      // 트랜잭션 완료 대기
-      const receipt = await tx.wait();
-    } catch (error) {
-      console.error('토큰 발행 중 오류:', error);
-      alert(`오류 발생: ${error.message}`);
-      throw error;
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -139,10 +97,6 @@ const PropertyCreate = () => {
           `서버 오류: ${errorData.message || response.statusText}`
         );
       }
-
-      // 서버 응답 처리
-      const result = await response.json();
-      await mintToken();
 
       alert('토큰 발행 성공!');
       navigate(`/main`);
@@ -226,122 +180,115 @@ const PropertyCreate = () => {
 
       <Container className="py-4" style={{ maxWidth: '800px' }}>
         {/* <Card className="shadow-sm"> */}
-          <Card.Body className="p-5">
-            <h2
-              className="text-center mb-4"
-              style={{ color: '#6c63ff', fontWeight: '600' }}
-            >
-              부동산 토큰 발행
-            </h2>
+        <Card.Body className="p-5">
+          <h2
+            className="text-center mb-4"
+            style={{ color: '#6c63ff', fontWeight: '600' }}
+          >
+            부동산 토큰 발행
+          </h2>
 
-            <ProgressBar
-
+          <ProgressBar
             now={(currentPage / 3) * 100}
             className="mb-4"
             style={{
               backgroundColor: '#F3F0FF',
             }}
-            >
+          >
             <div
               style={{
-              width: `${(currentPage / 3) * 100}%`,
-              height: '100%',
-              backgroundColor: '#6c63ff',
-              borderRadius: '4px',
+                width: `${(currentPage / 3) * 100}%`,
+                height: '100%',
+                backgroundColor: '#6c63ff',
+                borderRadius: '4px',
               }}
             ></div>
-            </ProgressBar>
-            <Form
-              onSubmit={handleSubmit}
-              className="mx-auto"
-              style={{ maxWidth: '700px' }}
-            >
-              {currentPage === 1 && (
-                <PropertyContents
+          </ProgressBar>
+          <Form
+            onSubmit={handleSubmit}
+            className="mx-auto"
+            style={{ maxWidth: '700px' }}
+          >
+            {currentPage === 1 && (
+              <PropertyContents formData={formData} setFormData={setFormData} />
+            )}
+            {currentPage === 2 && (
+              <>
+                <PropertyDetails
                   formData={formData}
                   setFormData={setFormData}
                 />
-              )}
-              {currentPage === 2 && (
-                <>
-                  <PropertyDetails
-                    formData={formData}
-                    setFormData={setFormData}
-                  />
-                  <PropertyPhoto images={images} setImages={setImages} />
-                </>
-              )}
-              {currentPage === 3 && (
-                <>
-                  <PropertyDocs
-                    formData={formData}
-                    setFormData={setFormData}
-                  />
-                  <Form.Group className="mb-4">
-                    <div className="d-flex align-items-center gap-2">
-                      <Form.Check
-                        type="checkbox"
-                        id="legalNotice"
-                        checked={formData.legalNotice}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            legalNotice: e.target.checked,
-                          })
-                        }
-                      />
-                      <Form.Label
-                        htmlFor="legalNotice"
-                        className="mb-0"
-                        style={{ color: '#495057' }}
-                      >
-                        이용약관에 동의합니다
-                      </Form.Label>
-                    </div>
-                  </Form.Group>
-                </>
-              )}
+                <PropertyPhoto images={images} setImages={setImages} />
+              </>
+            )}
+            {currentPage === 3 && (
+              <>
+                <PropertyDocs formData={formData} setFormData={setFormData} />
+                <Form.Group className="mb-4">
+                  <div className="d-flex align-items-center gap-2">
+                    <Form.Check
+                      type="checkbox"
+                      id="legalNotice"
+                      checked={formData.legalNotice}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          legalNotice: e.target.checked,
+                        })
+                      }
+                    />
+                    <Form.Label
+                      htmlFor="legalNotice"
+                      className="mb-0"
+                      style={{ color: '#495057' }}
+                    >
+                      이용약관에 동의합니다
+                    </Form.Label>
+                  </div>
+                </Form.Group>
+              </>
+            )}
 
-              <div className="d-flex justify-content-between mt-5">
-                {currentPage > 1 && (
-                  <Button
-                    variant="secondary"
-                    onClick={prevPage}
-                    className="px-4 py-2"
-                  >
-                    이전
-                  </Button>
-                )}
-                {currentPage < 3 ? (
-                  <Button
-                    variant="primary"
-                    onClick={nextPage}
-                    className="px-4 py-2 ms-auto"
-                    style={{
-                      backgroundColor: '#6c63ff',
-                      borderColor: '#6c63ff',
-                    }}
-                    disabled={!isCurrentPageValid()} // 여기에 disabled 속성 추가
-                  >
-                    다음
-                  </Button>
-                ) : (
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    className="px-4 py-2 ms-auto"
-                    disabled={!isCurrentPageValid()} // 여기에 disabled 속성 추가
-                    style={{
-                      backgroundColor: '#7950f2',
-                      borderColor: '#7950f2',
-                    }}
-                  >
-                    토큰 발행 신청
-                  </Button>
-                )}
-              </div>
-            </Form>
-          </Card.Body>
+            <div className="d-flex justify-content-between mt-5">
+              {currentPage > 1 && (
+                <Button
+                  variant="secondary"
+                  onClick={prevPage}
+                  className="px-4 py-2"
+                >
+                  이전
+                </Button>
+              )}
+              {currentPage < 3 ? (
+                <Button
+                  variant="primary"
+                  onClick={nextPage}
+                  className="px-4 py-2 ms-auto"
+                  style={{
+                    backgroundColor: '#6c63ff',
+                    borderColor: '#6c63ff',
+                  }}
+                  disabled={!isCurrentPageValid()} // 여기에 disabled 속성 추가
+                >
+                  다음
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="px-4 py-2 ms-auto"
+                  disabled={!isCurrentPageValid()} // 여기에 disabled 속성 추가
+                  style={{
+                    backgroundColor: '#7950f2',
+                    borderColor: '#7950f2',
+                  }}
+                >
+                  토큰 발행 신청
+                </Button>
+              )}
+            </div>
+          </Form>
+        </Card.Body>
         {/* </Card> */}
       </Container>
     </div>
