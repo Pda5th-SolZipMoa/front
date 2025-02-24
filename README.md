@@ -1,8 +1,55 @@
-# React + Vite
+## 부동산 토큰 증권 (STO) 쏠집모아
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+쏠집모아는 부동산 조각 투자(STO) 플랫폼으로, 블록체인 기술을 활용해 부동산 조각 투자 시뮬레이션을 진행할 수 있는 플랫폼입니다. 
 
-Currently, two official plugins are available:
+목돈 없이도 부동산 투자 가능
+블록체인 기반의 안전한 거래
+실시간 거래와 자동화된 청약 시스템 제공
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## **주요 기능**
+### **1. 메인 페이지**
+- **부동산 매물 리스트 조회** (최신순, 실거래가순 정렬 가능)  
+- **지도 기반 매물 검색** (카카오맵 API 연동)  
+
+![image](https://github.com/user-attachments/assets/7d01b3c3-ca66-4b5c-8773-854fda088605)
+
+### **2. 청약/투자 상세 페이지**
+- **거래 가능한 매물 목록 제공**  
+- **ChatGPT 연동을 통한 건물 투자 정보 요약 기능**  
+- **투자 관련 최신 뉴스 기사 제공 및 원문 이동 기능**  
+- **더보기 기능을 통해 추가적인 뉴스 기사 탐색 가능**
+
+![image](https://github.com/user-attachments/assets/cd97b582-226c-4e25-9e72-9523301bf20e)
+
+### **3. 청약 페이지**
+- **청약 가능 매물 조회 및 상세 정보 확인**  
+- **잔여 토큰 수량 및 청약 가능 금액 시각화**  
+- **청약 신청 및 마감 기한 카운트다운 제공**
+  
+![image](https://github.com/user-attachments/assets/453ca390-ea36-47ab-9881-1372c3e278eb)
+
+
+
+
+### **3. 토큰 거래 페이지**
+- **실시간 매수/매도 거래** (소켓 & Redis Pub/Sub 기반 데이터 업데이트)  
+- **체결된 거래 내역 및 시장 데이터 시각화**  
+- **잔액 및 주문 가능 금액 표시**
+  
+![image](https://github.com/user-attachments/assets/3f7c24d0-e21a-4eff-b0eb-f39af9aace82)
+
+### **4. 토큰 발행 페이지**
+- **매물 등록 및 토큰화 진행**  
+- **토큰 당 가격 결정**  
+- **매물 이미지 업로드 및 법적 서류 제출 기능 제공**
+
+![image](https://github.com/user-attachments/assets/8de7a3ab-9074-43a4-b5b6-94da0c800486)
+
+
+### **5. 마이페이지**
+- **보유 자산 포트폴리오 시각화** (파이 차트)  
+- **매수 종목 및 평가 금액, 수익률 확인**  
+- **거래 내역 및 청약 상태 조회**
+
+![image](https://github.com/user-attachments/assets/a0d29224-fb68-4cd2-a78c-4603a59b8e3f)
